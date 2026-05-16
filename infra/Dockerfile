@@ -1,23 +1,37 @@
-# Dockerfile para VittoStore Shopify App (Node.js/Express)
-FROM node:20-alpine
+# syntax=docker/dockerfile:1.7
+# Multi-stage build para VittoStore Shopify App
 
-# Crear directorio de la app
-WORKDIR /usr/src/app
+# ── Stage 1: dependencies ─────────────────────────────────
+FROM node:20-alpine AS deps
+WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm ci --omit=dev && npm cache clean --force
 
-# Copiar package.json y package-lock.json primero para aprovechar cache
-COPY package*.json ./
+# ── Stage 2: runtime ──────────────────────────────────────
+FROM node:20-alpine AS runtime
+WORKDIR /app
 
-# Instalar dependencias de producción
-RUN npm ci --only=production
+# Tini para signal handling (PID 1 limpio)
+RUN apk add --no-cache tini wget
 
-# Copiar el resto del código
-COPY . .
+# Usuario no-root
+RUN addgroup -S app && adduser -S app -G app
 
-# No copiar archivos sensibles ni node_modules locales
-RUN rm -rf node_modules tests scripts docs/*.md
+ENV NODE_ENV=production \
+    PORT=3000 \
+    NPM_CONFIG_LOGLEVEL=warn
 
-# Exponer el puerto
+COPY --from=deps --chown=app:app /app/node_modules ./node_modules
+COPY --chown=app:app package.json server.js ./
+COPY --chown=app:app app ./app
+COPY --chown=app:app public ./public
+COPY --chown=app:app config ./config
+
+USER app
 EXPOSE 3000
 
-# Comando de inicio
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD wget --quiet --tries=1 --spider http://localhost:3000/health || exit 1
+
+ENTRYPOINT ["/sbin/tini", "--"]
 CMD ["node", "server.js"]

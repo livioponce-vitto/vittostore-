@@ -1,24 +1,41 @@
-version: '3.8'
+# VittoStore — dev stack
+# Lanzar: docker compose -f infra/docker-compose.yml up
+
 services:
-  vittostore:
-    build: .
-    container_name: vittostore-app
-    restart: always
+  shopify-app:
+    build:
+      context: ../apps/shopify-app
+      dockerfile: ../../infra/Dockerfile
+    container_name: vittostore-shopify
+    restart: unless-stopped
     env_file:
-      - .env
+      - ../apps/shopify-app/.env
     ports:
       - "3000:3000"
     volumes:
-      - ./public:/usr/src/app/public
-      - ./config:/usr/src/app/config
-      - ./data:/usr/src/app/data
-    environment:
-      - NODE_ENV=production
-    # Si usas una base de datos externa, agrega aquí el servicio
-    # depends_on:
-    #   - mongo
-    # networks:
-    #   - vittostore-net
-#networks:
-#  vittostore-net:
-#    driver: bridge
+      - ../apps/shopify-app/config:/app/config
+      - ../apps/shopify-app/public:/app/public
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  oraculo:
+    build:
+      context: ../apps/oraculo-backend
+    container_name: vittostore-oraculo
+    restart: unless-stopped
+    env_file:
+      - ../apps/oraculo-backend/.env
+    ports:
+      - "3001:3000"
+    volumes:
+      - oraculo-data:/app/data
+    depends_on:
+      shopify-app:
+        condition: service_healthy
+
+volumes:
+  oraculo-data:
