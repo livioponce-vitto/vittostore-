@@ -1,0 +1,28 @@
+name: Monorepo Health
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  structure:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify required files exist
+        run: |
+          test -f README.md || (echo "Missing README.md" && exit 1)
+          test -f .gitignore || (echo "Missing .gitignore" && exit 1)
+          test -d apps/shopify-app || (echo "Missing apps/shopify-app" && exit 1)
+          test -d docs || (echo "Missing docs/" && exit 1)
+          echo "Monorepo structure OK"
+
+      - name: Scan for accidental secrets
+        run: |
+          if grep -rEI "(ghp_|sk_live_|AKIA[0-9A-Z]{16})" --include="*.js" --include="*.ts" --include="*.json" --include="*.md" --exclude-dir=node_modules --exclude-dir=.git .; then
+            echo "Potential secret found!" && exit 1
+          fi
+          echo "No obvious secrets detected"
