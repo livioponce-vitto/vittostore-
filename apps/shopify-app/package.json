@@ -26,7 +26,7 @@
     "express-rate-limit": "^8.3.2",
     "helmet": "^8.1.0",
     "hpp": "^0.2.3",
-    "lucide-react": "^1.14.0",
+    "lucide-react": "^1.16.0",
     "lusca": "^1.7.0",
     "node-cron": "^4.2.1",
     "prom-client": "^15.1.3",
