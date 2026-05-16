@@ -93,6 +93,41 @@ function buildAlerts(c) {
 }
 
 const authSession = require("../middleware/authSession");
+
+/**
+ * @swagger
+ * /campaigns:
+ *   get:
+ *     summary: List all campaigns for a shop
+ *     tags: [Campaigns]
+ *     parameters:
+ *       - in: query
+ *         name: shop
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: mi-tienda.myshopify.com
+ *     responses:
+ *       200:
+ *         description: Campaign list with computed alerts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 items:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Campaign'
+ *       400:
+ *         description: Missing shop param
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.get("/", authSession, (req, res) => {
   const { shop } = req.query;
   if (!shop) return res.status(400).json({ ok: false, error: "Param 'shop' requerido" });
@@ -101,6 +136,58 @@ router.get("/", authSession, (req, res) => {
   return res.json({ ok: true, items });
 });
 
+/**
+ * @swagger
+ * /campaigns:
+ *   post:
+ *     summary: Create a new campaign
+ *     tags: [Campaigns]
+ *     parameters:
+ *       - in: query
+ *         name: shop
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: mi-tienda.myshopify.com
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [name, channel]
+ *             properties:
+ *               name:
+ *                 type: string
+ *                 example: Black Friday 2025
+ *               channel:
+ *                 type: string
+ *                 enum: [meta, google, tiktok]
+ *               objective:
+ *                 type: string
+ *                 example: ventas
+ *               budgetDaily:
+ *                 type: number
+ *                 example: 12000
+ *     responses:
+ *       201:
+ *         description: Campaign created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 campaign:
+ *                   $ref: '#/components/schemas/Campaign'
+ *       400:
+ *         description: Missing shop param or invalid body
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.post("/", validate(campaignCreateSchema), (req, res) => {
   const { shop } = req.query;
   if (!shop) return res.status(400).json({ ok: false, error: "Param 'shop' requerido" });
@@ -109,6 +196,56 @@ router.post("/", validate(campaignCreateSchema), (req, res) => {
   return res.status(201).json({ ok: true, campaign: { ...created, alerts: buildAlerts(created) } });
 });
 
+/**
+ * @swagger
+ * /campaigns/{id}/optimize:
+ *   post:
+ *     summary: Auto-optimize campaign budget based on KPI thresholds
+ *     tags: [Campaigns]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Campaign ID
+ *       - in: query
+ *         name: shop
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: mi-tienda.myshopify.com
+ *     responses:
+ *       200:
+ *         description: Optimization applied
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 campaign:
+ *                   $ref: '#/components/schemas/Campaign'
+ *                 actions:
+ *                   type: array
+ *                   items:
+ *                     type: string
+ *                 channelSync:
+ *                   type: object
+ *       400:
+ *         description: Missing shop param
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Campaign not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.post("/:id/optimize", async (req, res) => {
   const { shop } = req.query;
   const { id } = req.params;
@@ -164,6 +301,59 @@ router.post("/:id/optimize", async (req, res) => {
   });
 });
 
+/**
+ * @swagger
+ * /campaigns/{id}/ab-test:
+ *   post:
+ *     summary: Run A/B test and redistribute traffic to best-performing creative
+ *     tags: [Campaigns]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Campaign ID
+ *       - in: query
+ *         name: shop
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: mi-tienda.myshopify.com
+ *     responses:
+ *       200:
+ *         description: A/B test result with 75/25 traffic split
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 result:
+ *                   type: object
+ *                   properties:
+ *                     winner:
+ *                       type: string
+ *                     loser:
+ *                       type: string
+ *                     message:
+ *                       type: string
+ *                 campaign:
+ *                   $ref: '#/components/schemas/Campaign'
+ *       400:
+ *         description: Fewer than 2 creatives
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Campaign not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.post("/:id/ab-test", (req, res) => {
   const { shop } = req.query;
   const { id } = req.params;

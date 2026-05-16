@@ -40,6 +40,72 @@ function buildErrorResponse(err) {
   };
 }
 
+/**
+ * @swagger
+ * /orders:
+ *   get:
+ *     summary: List orders with optional filters
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: query
+ *         name: shop
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: mi-tienda.myshopify.com
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *           maximum: 250
+ *       - in: query
+ *         name: status
+ *         schema:
+ *           type: string
+ *           default: any
+ *           enum: [any, open, closed, cancelled]
+ *       - in: query
+ *         name: page_info
+ *         schema:
+ *           type: string
+ *         description: Cursor token for next/previous page
+ *     responses:
+ *       200:
+ *         description: Paginated list of orders
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 orders:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Order'
+ *                 pagination:
+ *                   type: object
+ *                   nullable: true
+ *       400:
+ *         description: Missing shop param
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: No session for shop
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // ── GET /orders?shop=xxx&limit=10&status=any ─────────────────────────────────
 // Lista ordenes con filtros opcionales
 router.get("/", async (req, res) => {
@@ -72,6 +138,56 @@ router.get("/", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /orders/{id}:
+ *   get:
+ *     summary: Get a single order by ID
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Shopify order ID
+ *       - in: query
+ *         name: shop
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: mi-tienda.myshopify.com
+ *     responses:
+ *       200:
+ *         description: Order found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 order:
+ *                   $ref: '#/components/schemas/Order'
+ *       400:
+ *         description: Missing shop param
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: No session for shop
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // ── GET /orders/:id?shop=xxx ─────────────────────────────────────────────────
 // Obtiene una orden por ID
 router.get("/:id", async (req, res) => {
@@ -97,6 +213,67 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /orders/{id}:
+ *   put:
+ *     summary: Update an order (e.g. add note or tags)
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Shopify order ID
+ *       - in: query
+ *         name: shop
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: mi-tienda.myshopify.com
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               note:
+ *                 type: string
+ *               tags:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Order updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 order:
+ *                   $ref: '#/components/schemas/Order'
+ *       400:
+ *         description: Missing shop param or invalid body
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: No session for shop
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // ── PUT /orders/:id?shop=xxx ─────────────────────────────────────────────────
 // Actualiza una orden (ej: agregar nota, tags)
 router.put("/:id", validate(orderUpdateSchema), async (req, res) => {
@@ -126,6 +303,61 @@ router.put("/:id", validate(orderUpdateSchema), async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /orders/{id}/close:
+ *   post:
+ *     summary: Close an order
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Shopify order ID
+ *       - in: query
+ *         name: shop
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: mi-tienda.myshopify.com
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *     responses:
+ *       200:
+ *         description: Order closed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 order:
+ *                   $ref: '#/components/schemas/Order'
+ *       400:
+ *         description: Missing shop param
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: No session for shop
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // ── POST /orders/:id/close?shop=xxx ──────────────────────────────────────────
 // Cierra una orden
 router.post("/:id/close", validate(orderCloseSchema), async (req, res) => {
@@ -151,6 +383,68 @@ router.post("/:id/close", validate(orderCloseSchema), async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /orders/{id}/cancel:
+ *   post:
+ *     summary: Cancel an order
+ *     tags: [Orders]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Shopify order ID
+ *       - in: query
+ *         name: shop
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: mi-tienda.myshopify.com
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               reason:
+ *                 type: string
+ *                 enum: [customer, inventory, fraud, declined, other]
+ *               email:
+ *                 type: boolean
+ *                 description: Send cancellation email
+ *     responses:
+ *       200:
+ *         description: Order cancelled
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 order:
+ *                   $ref: '#/components/schemas/Order'
+ *       400:
+ *         description: Missing shop param
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: No session for shop
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // ── POST /orders/:id/cancel?shop=xxx ─────────────────────────────────────────
 // Cancela una orden
 router.post("/:id/cancel", validate(orderCloseSchema), async (req, res) => {

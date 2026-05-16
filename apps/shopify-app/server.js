@@ -139,6 +139,14 @@ const cartRecoveryRoutes = require("./app/routes/cartRecovery");
 const adaptiveBotDemoRoutes = require("./app/routes/adaptiveBotDemo");
 const cartRecovery = require("./app/services/cartRecovery");
 
+// Swagger UI — disabled in test env
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./app/swagger');
+if (process.env.NODE_ENV !== 'test') {
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  app.get('/api-docs.json', (req, res) => res.json(swaggerSpec));
+}
+
 app.use("/auth", authRoutes);
 app.use("/shopify", shopifyRoutes);
 app.use("/products", productRoutes);
@@ -149,6 +157,33 @@ app.use("/channels", channelRoutes);
 app.use("/cart-recovery", cartRecoveryRoutes);
 app.use("/api", adaptiveBotDemoRoutes);
 
+/**
+ * @swagger
+ * /shopify/sync:
+ *   post:
+ *     summary: Trigger on-demand Shopify sync (requires X-Sync-Token)
+ *     tags: [Shopify]
+ *     security:
+ *       - SyncToken: []
+ *     responses:
+ *       200:
+ *         description: Sync initiated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *       401:
+ *         description: Missing or invalid sync token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // Sincronización Shopify bajo demanda
 const { syncAll } = require('./app/jobs/syncShopify');
 app.post('/shopify/sync', (req, res) => {
@@ -160,6 +195,22 @@ app.post('/shopify/sync', (req, res) => {
   res.json({ ok: true, message: 'Sincronización iniciada' });
 });
 
+/**
+ * @swagger
+ * /metrics:
+ *   get:
+ *     summary: Prometheus metrics endpoint
+ *     tags: [Health]
+ *     responses:
+ *       200:
+ *         description: Prometheus text format metrics
+ *         content:
+ *           text/plain:
+ *             schema:
+ *               type: string
+ *       500:
+ *         description: Error collecting metrics
+ */
 // Endpoint /metrics robusto
 app.get('/metrics', async (req, res) => {
   try {
@@ -170,6 +221,20 @@ app.get('/metrics', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /health:
+ *   get:
+ *     summary: Health check endpoint
+ *     tags: [Health]
+ *     responses:
+ *       200:
+ *         description: App is healthy
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/HealthResponse'
+ */
 app.get("/health", (req, res) => {
   res.status(200).json({
     ok: true,
@@ -179,6 +244,42 @@ app.get("/health", (req, res) => {
 });
 
 
+/**
+ * @swagger
+ * /status:
+ *   get:
+ *     summary: Check session validity, scopes and server health
+ *     tags: [Health]
+ *     parameters:
+ *       - in: query
+ *         name: shop
+ *         required: false
+ *         schema:
+ *           type: string
+ *         example: mi-tienda.myshopify.com
+ *     responses:
+ *       200:
+ *         description: Server and session status
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 app:
+ *                   type: string
+ *                 env:
+ *                   type: string
+ *                 uptime:
+ *                   type: string
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                 session:
+ *                   type: object
+ *                   nullable: true
+ */
 // ── GET /status ──────────────────────────────────────────────────────────────
 // Verifica estado de sesión, permisos y salud del servidor
 app.get("/status", (req, res) => {

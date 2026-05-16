@@ -42,6 +42,80 @@ function toErrorResponse(err) {
   };
 }
 
+/**
+ * @swagger
+ * /dashboard/overview:
+ *   get:
+ *     summary: Get dashboard KPIs, alerts and quick actions
+ *     tags: [Dashboard]
+ *     parameters:
+ *       - in: query
+ *         name: shop
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: mi-tienda.myshopify.com
+ *     responses:
+ *       200:
+ *         description: Dashboard overview with KPIs and alerts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 status:
+ *                   type: object
+ *                   properties:
+ *                     server:
+ *                       type: string
+ *                     oauth:
+ *                       type: string
+ *                     shop:
+ *                       type: string
+ *                 kpis:
+ *                   type: object
+ *                   properties:
+ *                     ordersToday:
+ *                       type: integer
+ *                     productsActive:
+ *                       type: integer
+ *                     revenueToday:
+ *                       type: number
+ *                     lowStock:
+ *                       type: integer
+ *                 alerts:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       type:
+ *                         type: string
+ *                         enum: [warning, danger, success]
+ *                       title:
+ *                         type: string
+ *                       description:
+ *                         type: string
+ *       400:
+ *         description: Missing shop param
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: No session for shop
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.get("/overview", async (req, res) => {
   const { shop } = req.query;
 
@@ -125,6 +199,52 @@ router.get("/overview", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /dashboard/products:
+ *   get:
+ *     summary: List products for dashboard view
+ *     tags: [Dashboard]
+ *     parameters:
+ *       - in: query
+ *         name: shop
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: mi-tienda.myshopify.com
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 20
+ *           maximum: 100
+ *     responses:
+ *       200:
+ *         description: Product list
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 items:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Product'
+ *       400:
+ *         description: Missing shop param
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: No session for shop
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.get("/products", async (req, res) => {
   const { shop, limit = 20 } = req.query;
 
@@ -148,6 +268,52 @@ router.get("/products", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /dashboard/orders:
+ *   get:
+ *     summary: List orders for dashboard view
+ *     tags: [Dashboard]
+ *     parameters:
+ *       - in: query
+ *         name: shop
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: mi-tienda.myshopify.com
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 20
+ *           maximum: 100
+ *     responses:
+ *       200:
+ *         description: Order list
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 items:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Order'
+ *       400:
+ *         description: Missing shop param
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: No session for shop
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.get("/orders", async (req, res) => {
   const { shop, limit = 20 } = req.query;
 
@@ -171,6 +337,61 @@ router.get("/orders", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /dashboard/quick-actions/create-product:
+ *   post:
+ *     summary: Quick-create a draft product from dashboard
+ *     tags: [Dashboard]
+ *     parameters:
+ *       - in: query
+ *         name: shop
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: mi-tienda.myshopify.com
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [title]
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 example: Zapatillas VittoStore
+ *               price:
+ *                 type: number
+ *                 example: 29990
+ *               inventory:
+ *                 type: integer
+ *                 example: 50
+ *     responses:
+ *       201:
+ *         description: Draft product created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 product:
+ *                   $ref: '#/components/schemas/Product'
+ *       400:
+ *         description: Missing shop or title
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: No session for shop
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.post("/quick-actions/create-product", async (req, res) => {
   const { shop } = req.query;
   const { title, price, inventory } = req.body || {};
@@ -213,6 +434,50 @@ router.post("/quick-actions/create-product", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /dashboard/quick-actions/orders/{id}/close:
+ *   post:
+ *     summary: Quick-close an order from dashboard
+ *     tags: [Dashboard]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Shopify order ID
+ *       - in: query
+ *         name: shop
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: mi-tienda.myshopify.com
+ *     responses:
+ *       200:
+ *         description: Order closed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 order:
+ *                   $ref: '#/components/schemas/Order'
+ *       400:
+ *         description: Missing shop param
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: No session for shop
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.post("/quick-actions/orders/:id/close", async (req, res) => {
   const { shop } = req.query;
   const { id } = req.params;

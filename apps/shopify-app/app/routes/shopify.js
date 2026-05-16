@@ -2,6 +2,40 @@ const express = require("express");
 const verifyWebhook = require("../middleware/verifyWebhook");
 const router = express.Router();
 
+/**
+ * @swagger
+ * /shopify/webhooks/orders/paid:
+ *   post:
+ *     summary: Shopify webhook — order paid event
+ *     tags: [Shopify]
+ *     security:
+ *       - WebhookHmac: []
+ *     parameters:
+ *       - in: header
+ *         name: X-Shopify-Shop-Domain
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: header
+ *         name: X-Shopify-Hmac-Sha256
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/octet-stream:
+ *           schema:
+ *             type: string
+ *             format: binary
+ *     responses:
+ *       200:
+ *         description: Webhook processed
+ *       400:
+ *         description: Invalid payload or missing shop header
+ *       401:
+ *         description: Invalid HMAC signature
+ */
 // Webhook: orders/paid
 router.post("/webhooks/orders/paid", express.raw({ type: "*/*" }), verifyWebhook, (req, res) => {
   const shop = req.get("x-shopify-shop-domain");
@@ -19,6 +53,40 @@ router.post("/webhooks/orders/paid", express.raw({ type: "*/*" }), verifyWebhook
   }
 });
 
+/**
+ * @swagger
+ * /shopify/webhooks/orders/create:
+ *   post:
+ *     summary: Shopify webhook — order created event
+ *     tags: [Shopify]
+ *     security:
+ *       - WebhookHmac: []
+ *     parameters:
+ *       - in: header
+ *         name: X-Shopify-Shop-Domain
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: header
+ *         name: X-Shopify-Hmac-Sha256
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/octet-stream:
+ *           schema:
+ *             type: string
+ *             format: binary
+ *     responses:
+ *       200:
+ *         description: Webhook processed
+ *       400:
+ *         description: Invalid payload or missing shop header
+ *       401:
+ *         description: Invalid HMAC signature
+ */
 // Webhook: orders/create
 router.post("/webhooks/orders/create", express.raw({ type: "*/*" }), verifyWebhook, (req, res) => {
   const shop = req.get("x-shopify-shop-domain");
@@ -36,6 +104,40 @@ router.post("/webhooks/orders/create", express.raw({ type: "*/*" }), verifyWebho
   }
 });
 
+/**
+ * @swagger
+ * /shopify/webhooks/products/create:
+ *   post:
+ *     summary: Shopify webhook — product created event
+ *     tags: [Shopify]
+ *     security:
+ *       - WebhookHmac: []
+ *     parameters:
+ *       - in: header
+ *         name: X-Shopify-Shop-Domain
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: header
+ *         name: X-Shopify-Hmac-Sha256
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/octet-stream:
+ *           schema:
+ *             type: string
+ *             format: binary
+ *     responses:
+ *       200:
+ *         description: Webhook processed
+ *       400:
+ *         description: Invalid payload or missing shop header
+ *       401:
+ *         description: Invalid HMAC signature
+ */
 // Webhook: products/create
 router.post("/webhooks/products/create", express.raw({ type: "*/*" }), verifyWebhook, (req, res) => {
   const shop = req.get("x-shopify-shop-domain");
@@ -53,6 +155,40 @@ router.post("/webhooks/products/create", express.raw({ type: "*/*" }), verifyWeb
   }
 });
 
+/**
+ * @swagger
+ * /shopify/webhooks/app/scopes_update:
+ *   post:
+ *     summary: Shopify webhook — app scopes updated
+ *     tags: [Shopify]
+ *     security:
+ *       - WebhookHmac: []
+ *     parameters:
+ *       - in: header
+ *         name: X-Shopify-Shop-Domain
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: header
+ *         name: X-Shopify-Hmac-Sha256
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/octet-stream:
+ *           schema:
+ *             type: string
+ *             format: binary
+ *     responses:
+ *       200:
+ *         description: Webhook processed
+ *       400:
+ *         description: Invalid payload or missing shop header
+ *       401:
+ *         description: Invalid HMAC signature
+ */
 // Webhook: app/scopes_update
 router.post("/webhooks/app/scopes_update", express.raw({ type: "*/*" }), verifyWebhook, (req, res) => {
   const shop = req.get("x-shopify-shop-domain");
@@ -70,6 +206,51 @@ router.post("/webhooks/app/scopes_update", express.raw({ type: "*/*" }), verifyW
   }
 });
 
+/**
+ * @swagger
+ * /shopify/products/{id}/metafields/demo_info:
+ *   get:
+ *     summary: Get demo_info metafield for a product
+ *     tags: [Shopify]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: Shopify product ID
+ *       - in: query
+ *         name: shop
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: mi-tienda.myshopify.com
+ *     responses:
+ *       200:
+ *         description: Metafield data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 metafield:
+ *                   type: object
+ *                   nullable: true
+ *       400:
+ *         description: Missing shop param
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // --- BASE PARA METAOBJETOS Y METACAMPOS ---
 // Ejemplo: obtener metacampo Demo Info de un producto
 router.get("/products/:id/metafields/demo_info", async (req, res) => {
@@ -91,6 +272,64 @@ router.get("/products/:id/metafields/demo_info", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /shopify/metaobjects/qrcode:
+ *   post:
+ *     summary: Create a QR Code metaobject (requires type app.qrcode defined in Shopify admin)
+ *     tags: [Shopify]
+ *     parameters:
+ *       - in: query
+ *         name: shop
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: mi-tienda.myshopify.com
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [title, product, destination]
+ *             properties:
+ *               title:
+ *                 type: string
+ *               product:
+ *                 type: string
+ *               product_variant:
+ *                 type: string
+ *               destination:
+ *                 type: string
+ *                 enum: [product, checkout]
+ *               scans:
+ *                 type: integer
+ *                 default: 0
+ *     responses:
+ *       200:
+ *         description: Metaobject created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 metaobject:
+ *                   type: object
+ *       400:
+ *         description: Missing shop param
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // Ejemplo: crear metaobjeto QR Code (requiere definición previa en Shopify admin)
 router.post("/metaobjects/qrcode", async (req, res) => {
   const shop = req.query.shop;
@@ -127,6 +366,40 @@ router.post("/metaobjects/qrcode", async (req, res) => {
 });
 
 
+/**
+ * @swagger
+ * /shopify/webhooks/products/update:
+ *   post:
+ *     summary: Shopify webhook — product updated event
+ *     tags: [Shopify]
+ *     security:
+ *       - WebhookHmac: []
+ *     parameters:
+ *       - in: header
+ *         name: X-Shopify-Shop-Domain
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: header
+ *         name: X-Shopify-Hmac-Sha256
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/octet-stream:
+ *           schema:
+ *             type: string
+ *             format: binary
+ *     responses:
+ *       200:
+ *         description: Webhook processed
+ *       400:
+ *         description: Invalid payload or missing shop header
+ *       401:
+ *         description: Invalid HMAC signature
+ */
 // Webhook: products/update
 router.post("/webhooks/products/update", express.raw({ type: "*/*" }), verifyWebhook, (req, res) => {
   const shop = req.get("x-shopify-shop-domain");
@@ -145,6 +418,40 @@ router.post("/webhooks/products/update", express.raw({ type: "*/*" }), verifyWeb
   }
 });
 
+/**
+ * @swagger
+ * /shopify/webhooks/orders/cancelled:
+ *   post:
+ *     summary: Shopify webhook — order cancelled event
+ *     tags: [Shopify]
+ *     security:
+ *       - WebhookHmac: []
+ *     parameters:
+ *       - in: header
+ *         name: X-Shopify-Shop-Domain
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: header
+ *         name: X-Shopify-Hmac-Sha256
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/octet-stream:
+ *           schema:
+ *             type: string
+ *             format: binary
+ *     responses:
+ *       200:
+ *         description: Webhook processed
+ *       400:
+ *         description: Invalid payload or missing shop header
+ *       401:
+ *         description: Invalid HMAC signature
+ */
 // Webhook: orders/cancelled
 router.post("/webhooks/orders/cancelled", express.raw({ type: "*/*" }), verifyWebhook, (req, res) => {
   const shop = req.get("x-shopify-shop-domain");
@@ -163,6 +470,40 @@ router.post("/webhooks/orders/cancelled", express.raw({ type: "*/*" }), verifyWe
   }
 });
 
+/**
+ * @swagger
+ * /shopify/webhooks/customers/create:
+ *   post:
+ *     summary: Shopify webhook — customer created event
+ *     tags: [Shopify]
+ *     security:
+ *       - WebhookHmac: []
+ *     parameters:
+ *       - in: header
+ *         name: X-Shopify-Shop-Domain
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: header
+ *         name: X-Shopify-Hmac-Sha256
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/octet-stream:
+ *           schema:
+ *             type: string
+ *             format: binary
+ *     responses:
+ *       200:
+ *         description: Webhook processed
+ *       400:
+ *         description: Invalid payload or missing shop header
+ *       401:
+ *         description: Invalid HMAC signature
+ */
 // Webhook: customers/create
 router.post("/webhooks/customers/create", express.raw({ type: "*/*" }), verifyWebhook, (req, res) => {
   const shop = req.get("x-shopify-shop-domain");
@@ -181,6 +522,39 @@ router.post("/webhooks/customers/create", express.raw({ type: "*/*" }), verifyWe
   }
 });
 
+/**
+ * @swagger
+ * /shopify/config:
+ *   get:
+ *     summary: Get app configuration (host, scopes, API version)
+ *     tags: [Shopify]
+ *     responses:
+ *       200:
+ *         description: App configuration
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 app:
+ *                   type: string
+ *                 hostName:
+ *                   type: string
+ *                 scopes:
+ *                   type: string
+ *                 runtime:
+ *                   type: string
+ *                 apiVersion:
+ *                   type: string
+ *       500:
+ *         description: Internal error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.get("/config", (req, res) => {
   try {
     const hostName = (process.env.SHOPIFY_APP_URL || process.env.HOST || "")
@@ -201,6 +575,42 @@ router.get("/config", (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /shopify/install:
+ *   get:
+ *     summary: Installation entrypoint for Shopify partner app setup
+ *     tags: [Shopify]
+ *     parameters:
+ *       - in: query
+ *         name: shop
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: mi-tienda.myshopify.com
+ *     responses:
+ *       200:
+ *         description: Installation entrypoint ready
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 message:
+ *                   type: string
+ *                 next:
+ *                   type: string
+ *                 shop:
+ *                   type: string
+ *       400:
+ *         description: Missing shop param
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.get("/install", (req, res) => {
   const shop = req.query.shop;
 
@@ -221,6 +631,40 @@ router.get("/install", (req, res) => {
 
 const { deleteSession } = require("../services/sessionStorage");
 
+/**
+ * @swagger
+ * /shopify/webhooks/app/uninstalled:
+ *   post:
+ *     summary: Shopify webhook — app uninstalled (GDPR mandatory)
+ *     tags: [Shopify]
+ *     security:
+ *       - WebhookHmac: []
+ *     parameters:
+ *       - in: header
+ *         name: X-Shopify-Shop-Domain
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: header
+ *         name: X-Shopify-Hmac-Sha256
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/octet-stream:
+ *           schema:
+ *             type: string
+ *             format: binary
+ *     responses:
+ *       200:
+ *         description: Session deleted, app uninstalled
+ *       400:
+ *         description: Invalid payload or missing shop header
+ *       401:
+ *         description: Invalid HMAC signature
+ */
 router.post("/webhooks/app/uninstalled", express.raw({ type: "*/*" }), verifyWebhook, (req, res) => {
   const shop = req.get("x-shopify-shop-domain");
   if (!shop || typeof shop !== 'string') {
@@ -239,6 +683,40 @@ router.post("/webhooks/app/uninstalled", express.raw({ type: "*/*" }), verifyWeb
 });
 
 
+/**
+ * @swagger
+ * /shopify/webhooks/customers/data_request:
+ *   post:
+ *     summary: Shopify GDPR — customer data request
+ *     tags: [Shopify]
+ *     security:
+ *       - WebhookHmac: []
+ *     parameters:
+ *       - in: header
+ *         name: X-Shopify-Shop-Domain
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: header
+ *         name: X-Shopify-Hmac-Sha256
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/octet-stream:
+ *           schema:
+ *             type: string
+ *             format: binary
+ *     responses:
+ *       200:
+ *         description: Request acknowledged
+ *       400:
+ *         description: Missing shop header
+ *       401:
+ *         description: Invalid HMAC signature
+ */
 router.post("/webhooks/customers/data_request", express.raw({ type: "*/*" }), verifyWebhook, (req, res) => {
   const shop = req.get("x-shopify-shop-domain");
   if (!shop || typeof shop !== 'string') {
@@ -250,6 +728,40 @@ router.post("/webhooks/customers/data_request", express.raw({ type: "*/*" }), ve
 });
 
 
+/**
+ * @swagger
+ * /shopify/webhooks/customers/redact:
+ *   post:
+ *     summary: Shopify GDPR — customer data redact request
+ *     tags: [Shopify]
+ *     security:
+ *       - WebhookHmac: []
+ *     parameters:
+ *       - in: header
+ *         name: X-Shopify-Shop-Domain
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: header
+ *         name: X-Shopify-Hmac-Sha256
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/octet-stream:
+ *           schema:
+ *             type: string
+ *             format: binary
+ *     responses:
+ *       200:
+ *         description: Redact request acknowledged
+ *       400:
+ *         description: Missing shop header
+ *       401:
+ *         description: Invalid HMAC signature
+ */
 router.post("/webhooks/customers/redact", express.raw({ type: "*/*" }), verifyWebhook, (req, res) => {
   const shop = req.get("x-shopify-shop-domain");
   if (!shop || typeof shop !== 'string') {
@@ -261,6 +773,40 @@ router.post("/webhooks/customers/redact", express.raw({ type: "*/*" }), verifyWe
 });
 
 
+/**
+ * @swagger
+ * /shopify/webhooks/shop/redact:
+ *   post:
+ *     summary: Shopify GDPR — shop data redact request
+ *     tags: [Shopify]
+ *     security:
+ *       - WebhookHmac: []
+ *     parameters:
+ *       - in: header
+ *         name: X-Shopify-Shop-Domain
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: header
+ *         name: X-Shopify-Hmac-Sha256
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/octet-stream:
+ *           schema:
+ *             type: string
+ *             format: binary
+ *     responses:
+ *       200:
+ *         description: Redact request acknowledged
+ *       400:
+ *         description: Missing shop header
+ *       401:
+ *         description: Invalid HMAC signature
+ */
 router.post("/webhooks/shop/redact", express.raw({ type: "*/*" }), verifyWebhook, (req, res) => {
   const shop = req.get("x-shopify-shop-domain");
   if (!shop || typeof shop !== 'string') {

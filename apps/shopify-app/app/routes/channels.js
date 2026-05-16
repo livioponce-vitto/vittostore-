@@ -26,6 +26,57 @@ function getApi(channel) {
   return null;
 }
 
+/**
+ * @swagger
+ * /channels/connect:
+ *   post:
+ *     summary: Store ad channel credentials for a shop
+ *     tags: [Channels]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [shop, channel, accessToken, accountId]
+ *             properties:
+ *               shop:
+ *                 type: string
+ *                 example: mi-tienda.myshopify.com
+ *               channel:
+ *                 type: string
+ *                 enum: [meta, google, tiktok]
+ *               accessToken:
+ *                 type: string
+ *               accountId:
+ *                 type: string
+ *               extra:
+ *                 type: object
+ *     responses:
+ *       201:
+ *         description: Channel credentials saved
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 channel:
+ *                   type: object
+ *       400:
+ *         description: Missing or invalid params
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // ── POST /channels/connect ───────────────────────────────────────────────────
 
 router.post("/connect", (req, res) => {
@@ -57,6 +108,43 @@ router.post("/connect", (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /channels:
+ *   get:
+ *     summary: List connected ad channels for a shop
+ *     tags: [Channels]
+ *     parameters:
+ *       - in: query
+ *         name: shop
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: mi-tienda.myshopify.com
+ *     responses:
+ *       200:
+ *         description: Connected channels list (tokens redacted)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 items:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       channel:
+ *                         type: string
+ *                       accountId:
+ *                         type: string
+ *       400:
+ *         description: Missing shop param
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // ── GET /channels ────────────────────────────────────────────────────────────
 const authSession = require("../middleware/authSession");
 router.get("/", authSession, (req, res) => {
@@ -70,6 +158,42 @@ router.get("/", authSession, (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /channels/{channel}:
+ *   delete:
+ *     summary: Disconnect an ad channel from a shop
+ *     tags: [Channels]
+ *     parameters:
+ *       - in: path
+ *         name: channel
+ *         required: true
+ *         schema:
+ *           type: string
+ *           enum: [meta, google, tiktok]
+ *       - in: query
+ *         name: shop
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: mi-tienda.myshopify.com
+ *     responses:
+ *       200:
+ *         description: Channel disconnected
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *       400:
+ *         description: Missing shop or unsupported channel
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // ── DELETE /channels/:channel ────────────────────────────────────────────────
 
 router.delete("/:channel", authSession, (req, res) => {
@@ -88,6 +212,59 @@ router.delete("/:channel", authSession, (req, res) => {
   res.json({ ok: true });
 });
 
+/**
+ * @swagger
+ * /channels/sync-campaign:
+ *   post:
+ *     summary: Push a VittoStore campaign to its ad channel API
+ *     tags: [Channels]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [shop, campaignId]
+ *             properties:
+ *               shop:
+ *                 type: string
+ *                 example: mi-tienda.myshopify.com
+ *               campaignId:
+ *                 type: string
+ *                 example: cmp_a1b2c3d4
+ *     responses:
+ *       200:
+ *         description: Campaign synced to channel
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 externalId:
+ *                   type: string
+ *                 platform:
+ *                   type: string
+ *       400:
+ *         description: Missing params or channel not connected
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Campaign not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       502:
+ *         description: Channel API error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // ── POST /channels/sync-campaign ─────────────────────────────────────────────
 // Pushes a VittoStore campaign to the specified ad channel.
 
@@ -128,6 +305,58 @@ router.post("/sync-campaign", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /channels/metrics:
+ *   get:
+ *     summary: Fetch real-time metrics from channel and merge into campaign
+ *     tags: [Channels]
+ *     parameters:
+ *       - in: query
+ *         name: shop
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: mi-tienda.myshopify.com
+ *       - in: query
+ *         name: campaignId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: cmp_a1b2c3d4
+ *     responses:
+ *       200:
+ *         description: Live metrics merged into campaign
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 campaignId:
+ *                   type: string
+ *                 metrics:
+ *                   type: object
+ *       400:
+ *         description: Missing params or campaign not yet synced
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Campaign not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       502:
+ *         description: Channel API error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // ── GET /channels/metrics ─────────────────────────────────────────────────────
 // Fetches real metrics from channel and merges into the campaign.
 router.get("/metrics", async (req, res) => {

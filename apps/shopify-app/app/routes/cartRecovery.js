@@ -35,6 +35,60 @@ router.get("/escalations", authSession, (req, res, next) => next());
 router.post("/:id/trigger", authSession, validate(cartTriggerSchema), (req, res, next) => next());
 router.post("/:id/recovered", authSession, (req, res, next) => next());
 
+/**
+ * @swagger
+ * /cart-recovery/webhook:
+ *   post:
+ *     summary: Receive Shopify abandoned_checkouts/update webhook
+ *     tags: [Cart Recovery]
+ *     security:
+ *       - WebhookHmac: []
+ *     parameters:
+ *       - in: header
+ *         name: X-Shopify-Shop-Domain
+ *         required: false
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [abandoned_checkout_url]
+ *             properties:
+ *               id:
+ *                 type: integer
+ *               abandoned_checkout_url:
+ *                 type: string
+ *                 format: uri
+ *               customer:
+ *                 type: object
+ *     responses:
+ *       200:
+ *         description: Cart upserted or skipped
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 skipped:
+ *                   type: boolean
+ *       400:
+ *         description: Invalid payload
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       401:
+ *         description: Invalid HMAC signature
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // ── POST /cart-recovery/webhook (Shopify) ────────────────────────────────────
 
 router.post("/webhook", (req, res, next) => {
@@ -58,6 +112,31 @@ router.post("/webhook", (req, res, next) => {
   res.status(200).json({ ok: true });
 });
 
+/**
+ * @swagger
+ * /cart-recovery/whatsapp-webhook:
+ *   get:
+ *     summary: Meta webhook challenge verification
+ *     tags: [Cart Recovery]
+ *     parameters:
+ *       - in: query
+ *         name: hub.mode
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: hub.verify_token
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: hub.challenge
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Challenge echoed back (verification success)
+ *       403:
+ *         description: Verification token mismatch
+ */
 // ── GET /cart-recovery/whatsapp-webhook (Meta challenge) ─────────────────────
 router.get("/whatsapp-webhook", (req, res) => {
   const challenge = metaWhatsapp.verifyWebhookChallenge(req);
@@ -65,6 +144,49 @@ router.get("/whatsapp-webhook", (req, res) => {
   res.status(403).json({ error: "Verification failed" });
 });
 
+/**
+ * @swagger
+ * /cart-recovery/whatsapp-webhook:
+ *   post:
+ *     summary: Receive incoming WhatsApp messages from customers
+ *     tags: [Cart Recovery]
+ *     parameters:
+ *       - in: header
+ *         name: X-Hub-Signature-256
+ *         schema:
+ *           type: string
+ *         description: Meta HMAC-SHA256 signature
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               object:
+ *                 type: string
+ *                 example: whatsapp_business_account
+ *               entry:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *     responses:
+ *       200:
+ *         description: Message accepted (processing is async)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *       401:
+ *         description: Invalid signature
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // ── POST /cart-recovery/whatsapp-webhook (incoming messages) ─────────────────
 
 router.post("/whatsapp-webhook", express.json(), async (req, res) => {
@@ -212,6 +334,38 @@ async function handleIncomingMessage(msg) {
   session.recordOutgoing(phone, "clarification_buttons", "clarification");
 }
 
+/**
+ * @swagger
+ * /cart-recovery:
+ *   get:
+ *     summary: List abandoned carts for a shop
+ *     tags: [Cart Recovery]
+ *     parameters:
+ *       - in: query
+ *         name: shop
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: mi-tienda.myshopify.com
+ *     responses:
+ *       200:
+ *         description: List of abandoned carts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 items:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/AbandonedCart'
+ *       400:
+ *         description: Missing shop param
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // ── GET /cart-recovery ───────────────────────────────────────────────────────
 router.get("/", (req, res) => {
   const { shop } = req.query;
@@ -222,6 +376,41 @@ router.get("/", (req, res) => {
   res.json({ items: recovery.listCarts(shop) });
 });
 
+/**
+ * @swagger
+ * /cart-recovery/stats:
+ *   get:
+ *     summary: Get cart recovery rate statistics for a shop
+ *     tags: [Cart Recovery]
+ *     parameters:
+ *       - in: query
+ *         name: shop
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: mi-tienda.myshopify.com
+ *     responses:
+ *       200:
+ *         description: Recovery stats
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 total:
+ *                   type: integer
+ *                 recovered:
+ *                   type: integer
+ *                 recoveryRate:
+ *                   type: number
+ *                   description: Percentage (0-100)
+ *       400:
+ *         description: Missing shop param
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // ── GET /cart-recovery/stats ─────────────────────────────────────────────────
 router.get("/stats", (req, res) => {
   const { shop } = req.query;
@@ -232,11 +421,74 @@ router.get("/stats", (req, res) => {
   res.json(recovery.getStats(shop));
 });
 
+/**
+ * @swagger
+ * /cart-recovery/escalations:
+ *   get:
+ *     summary: List conversation sessions pending human attention
+ *     tags: [Cart Recovery]
+ *     responses:
+ *       200:
+ *         description: Escalation list
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 items:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       phone:
+ *                         type: string
+ *                       reason:
+ *                         type: string
+ *                       flaggedAt:
+ *                         type: string
+ *                         format: date-time
+ */
 // ── GET /cart-recovery/escalations ──────────────────────────────────────────
 router.get("/escalations", (_req, res) => {
   res.json({ items: session.getPendingEscalations() });
 });
 
+/**
+ * @swagger
+ * /cart-recovery/human-takeover:
+ *   post:
+ *     summary: Mark a phone number as under human control (disable bot)
+ *     tags: [Cart Recovery]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [phone]
+ *             properties:
+ *               phone:
+ *                 type: string
+ *                 example: "56912345678"
+ *     responses:
+ *       200:
+ *         description: Human takeover enabled
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 phone:
+ *                   type: string
+ *       400:
+ *         description: Missing or invalid phone
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // ── POST /cart-recovery/human-takeover ──────────────────────────────────────
 
 router.post("/human-takeover", (req, res) => {
@@ -250,6 +502,42 @@ router.post("/human-takeover", (req, res) => {
   res.json({ ok: true, phone });
 });
 
+/**
+ * @swagger
+ * /cart-recovery/human-release:
+ *   post:
+ *     summary: Return a phone number to bot control
+ *     tags: [Cart Recovery]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [phone]
+ *             properties:
+ *               phone:
+ *                 type: string
+ *                 example: "56912345678"
+ *     responses:
+ *       200:
+ *         description: Bot control restored
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 phone:
+ *                   type: string
+ *       400:
+ *         description: Missing or invalid phone
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // ── POST /cart-recovery/human-release ───────────────────────────────────────
 
 router.post("/human-release", (req, res) => {
@@ -263,6 +551,51 @@ router.post("/human-release", (req, res) => {
   res.json({ ok: true, phone });
 });
 
+/**
+ * @swagger
+ * /cart-recovery/{id}/trigger:
+ *   post:
+ *     summary: Manually trigger the recovery sequence for a cart
+ *     tags: [Cart Recovery]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Abandoned cart ID
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *     responses:
+ *       200:
+ *         description: Recovery sequence triggered
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 triggered:
+ *                   type: boolean
+ *                 cart:
+ *                   $ref: '#/components/schemas/AbandonedCart'
+ *       400:
+ *         description: Cart already recovered, expired, or sequence complete
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       404:
+ *         description: Cart not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // ── POST /cart-recovery/:id/trigger ─────────────────────────────────────────
 
 router.post("/:id/trigger", (req, res) => {
@@ -284,6 +617,43 @@ router.post("/:id/trigger", (req, res) => {
   res.json({ ok: true, triggered: true, cart: result });
 });
 
+/**
+ * @swagger
+ * /cart-recovery/{id}/recovered:
+ *   post:
+ *     summary: Mark an abandoned cart as manually recovered
+ *     tags: [Cart Recovery]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Abandoned cart ID
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *     responses:
+ *       200:
+ *         description: Cart marked as recovered
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 cart:
+ *                   $ref: '#/components/schemas/AbandonedCart'
+ *       404:
+ *         description: Cart not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 // ── POST /cart-recovery/:id/recovered ───────────────────────────────────────
 
 router.post("/:id/recovered", (req, res) => {

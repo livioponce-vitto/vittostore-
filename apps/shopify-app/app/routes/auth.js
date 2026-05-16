@@ -27,6 +27,26 @@ function decryptToken(encryptedData) {
   return Buffer.concat([decipher.update(encrypted), decipher.final()]).toString("utf8");
 }
 
+/**
+ * @swagger
+ * /auth:
+ *   get:
+ *     summary: Begin Shopify OAuth 2.0 flow
+ *     tags: [Auth]
+ *     parameters:
+ *       - in: query
+ *         name: shop
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: mi-tienda.myshopify.com
+ *         description: Shopify store domain
+ *     responses:
+ *       302:
+ *         description: Redirect to Shopify authorization page
+ *       500:
+ *         description: Error beginning OAuth
+ */
 // ── GET /auth ────────────────────────────────────────────────────────────────
 // HMAC validado automaticamente por @shopify/shopify-api
 router.get("/", async (req, res) => {
@@ -44,6 +64,41 @@ router.get("/", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /auth/callback:
+ *   get:
+ *     summary: Shopify OAuth callback — completes installation and saves encrypted token
+ *     tags: [Auth]
+ *     parameters:
+ *       - in: query
+ *         name: code
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Authorization code from Shopify
+ *       - in: query
+ *         name: shop
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Shopify store domain
+ *       - in: query
+ *         name: hmac
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: HMAC signature to verify authenticity
+ *       - in: query
+ *         name: state
+ *         schema:
+ *           type: string
+ *     responses:
+ *       302:
+ *         description: Redirect to /app after successful installation
+ *       500:
+ *         description: Error during OAuth callback
+ */
 // ── GET /auth/callback ───────────────────────────────────────────────────────
 router.get("/callback", async (req, res) => {
   try {
