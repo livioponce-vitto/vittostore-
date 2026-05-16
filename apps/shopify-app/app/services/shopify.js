@@ -31,17 +31,65 @@ const shopify = shopifyApi({
   isEmbeddedApp: true,
 });
 
-// Funciones mock para sincronización
-function syncProducts() {
-  // Aquí irá la lógica real de sincronización de productos
-  console.log('[shopifyService] syncProducts ejecutado (mock)');
-  return Promise.resolve();
+async function syncProducts() {
+  const shop = process.env.SHOPIFY_SHOP_URL;
+  const accessToken = process.env.SHOPIFY_ACCESS_TOKEN;
+  const client = new shopify.clients.Rest({ session: { shop, accessToken } });
+
+  const allProducts = [];
+  let pageInfo = null;
+
+  try {
+    do {
+      const params = { limit: 250 };
+      if (pageInfo) params.page_info = pageInfo;
+
+      const response = await client.get({ path: 'products', query: params });
+      const products = response.body.products || [];
+      allProducts.push(...products);
+
+      const linkHeader = response.headers?.get('link') || '';
+      const nextMatch = linkHeader.match(/<[^>]*page_info=([^&>]+)[^>]*>;\s*rel="next"/);
+      pageInfo = nextMatch ? nextMatch[1] : null;
+    } while (pageInfo);
+
+    console.log(`[syncShopify] Synced ${allProducts.length} products`);
+    return allProducts;
+  } catch (err) {
+    console.error('[syncShopify] Error syncing products:', err.message);
+    throw err;
+  }
 }
 
-function syncOrders() {
-  // Aquí irá la lógica real de sincronización de órdenes
-  console.log('[shopifyService] syncOrders ejecutado (mock)');
-  return Promise.resolve();
+async function syncOrders() {
+  const shop = process.env.SHOPIFY_SHOP_URL;
+  const accessToken = process.env.SHOPIFY_ACCESS_TOKEN;
+  const client = new shopify.clients.Rest({ session: { shop, accessToken } });
+
+  const since = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+  const allOrders = [];
+  let pageInfo = null;
+
+  try {
+    do {
+      const params = { limit: 250, status: 'any', created_at_min: since };
+      if (pageInfo) params.page_info = pageInfo;
+
+      const response = await client.get({ path: 'orders', query: params });
+      const orders = response.body.orders || [];
+      allOrders.push(...orders);
+
+      const linkHeader = response.headers?.get('link') || '';
+      const nextMatch = linkHeader.match(/<[^>]*page_info=([^&>]+)[^>]*>;\s*rel="next"/);
+      pageInfo = nextMatch ? nextMatch[1] : null;
+    } while (pageInfo);
+
+    console.log(`[syncShopify] Synced ${allOrders.length} orders`);
+    return allOrders;
+  } catch (err) {
+    console.error('[syncShopify] Error syncing orders:', err.message);
+    throw err;
+  }
 }
 
 module.exports = Object.assign(shopify, {

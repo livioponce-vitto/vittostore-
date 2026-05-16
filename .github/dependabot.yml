@@ -1,0 +1,77 @@
+version: 2
+updates:
+  # Root package.json
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+    groups:
+      prisma:
+        patterns:
+          - "prisma"
+          - "@prisma/*"
+      shopify:
+        patterns:
+          - "@shopify/*"
+      dev-dependencies:
+        dependency-type: "development"
+
+  # Shopify app
+  - package-ecosystem: "npm"
+    directory: "/apps/shopify-app"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "shopify-app"
+    groups:
+      prisma:
+        patterns:
+          - "prisma"
+          - "@prisma/*"
+      shopify:
+        patterns:
+          - "@shopify/*"
+      dev-dependencies:
+        dependency-type: "development"
+
+  # Oraculo backend
+  - package-ecosystem: "npm"
+    directory: "/apps/oraculo-backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "oraculo-backend"
+    groups:
+      prisma:
+        patterns:
+          - "prisma"
+          - "@prisma/*"
+      shopify:
+        patterns:
+          - "@shopify/*"
+      dev-dependencies:
+        dependency-type: "development"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
