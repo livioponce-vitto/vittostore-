@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VittoStore Control</title>
+  <link rel="stylesheet" href="/styles/app.css" />
+</head>
+<body>
+  <main class="app-shell" aria-label="Panel principal">
+    <header class="topbar" aria-label="Barra superior">
+      <div class="brand">VittoStore Control</div>
+      <div class="sub">Panel mobile-first para ventas y operaciones</div>
+
+      <form id="shop-form" class="shop-row">
+        <input id="shop-input" class="shop-input" placeholder="tienda.myshopify.com" aria-label="Dominio de tienda Shopify" />
+        <button class="btn" type="submit" title="Conecta tu tienda Shopify">Conectar</button>
+      </form>
+
+      <div class="status-row" aria-live="polite">
+        <span id="status-server" class="pill">Servidor: ...</span>
+        <span id="status-oauth" class="pill">OAuth: ...</span>
+        <span id="status-shop" class="pill">Tienda: ...</span>
+        <a href="/feedback.html" target="_blank" class="pill pill-link" style="margin-left:1em;">
+          <span style="font-size:1.1em;">💬</span> Feedback y sugerencias
+        </a>
+      </div>
+    </header>
+
+    <section id="screen-home" class="screen active">
+      <div class="grid-kpi">
+        <article class="kpi">
+          <div class="label">Ordenes del periodo</div>
+          <div id="kpi-orders" class="value">--</div>
+        </article>
+        <article class="kpi">
+          <div class="label">Productos activos</div>
+          <div id="kpi-products" class="value">--</div>
+        </article>
+        <article class="kpi">
+          <div class="label">Ingresos</div>
+          <div id="kpi-revenue" class="value">--</div>
+        </article>
+        <article class="kpi">
+          <div class="label">Stock critico</div>
+          <div id="kpi-stock" class="value">--</div>
+        </article>
+      </div>
+
+      <section class="section">
+        <h3>Alertas de negocio</h3>
+        <div id="alerts"></div>
+      </section>
+
+      <section class="section">
+        <h3>Acciones rápidas <span title="Accesos directos para refrescar datos y panel">🛈</span></h3>
+        <button id="refresh-btn" class="btn" title="Recarga todos los datos del panel">Actualizar panel</button>
+        <button class="btn btn-feedback" onclick="window.open('/feedback.html','_blank')" title="Envíanos tu feedback">
+          <span style="font-size:1.1em;">💬</span> ¡Déjanos tu opinión!
+        </button>
+      </section>
+
+      <section class="section">
+        <h3>Carritos abandonados</h3>
+        <div id="cart-recovery-stats" class="grid-kpi" style="grid-template-columns:repeat(3,1fr)">
+          <article class="kpi"><div class="label">Total</div><div id="cr-total" class="value">--</div></article>
+          <article class="kpi"><div class="label">Recuperados</div><div id="cr-recovered" class="value">--</div></article>
+          <article class="kpi"><div class="label">Tasa</div><div id="cr-rate" class="value">--</div></article>
+        </div>
+        <div id="carts-list" class="list"></div>
+      </section>
+    </section>
+
+    <section id="screen-products" class="screen">
+      <section class="section">
+        <h3>Crear producto rapido</h3>
+        <form id="quick-product-form" class="form-grid">
+          <input id="quick-title" placeholder="Nombre del producto" />
+          <input id="quick-price" type="number" min="0" step="1" placeholder="Precio" />
+          <input id="quick-stock" type="number" min="0" step="1" placeholder="Stock" />
+          <button class="btn" type="submit" title="Crea un producto rápido">Crear borrador</button>
+        </form>
+      </section>
+
+      <section class="section">
+        <h3>Productos</h3>
+        <div id="products-list" class="list"></div>
+      </section>
+    </section>
+
+    <section id="screen-orders" class="screen">
+      <section class="section">
+        <h3>Ordenes</h3>
+        <div id="orders-list" class="list"></div>
+      </section>
+    </section>
+
+    <section id="screen-campaigns" class="screen">
+      <section class="section">
+        <h3>Campanas publicitarias</h3>
+        <form id="campaign-form" class="form-grid">
+          <input id="camp-name" placeholder="Nombre de campana" />
+          <div class="split-2">
+            <select id="camp-channel">
+              <option value="meta">Meta Ads</option>
+              <option value="google">Google Ads</option>
+              <option value="tiktok">TikTok Ads</option>
+            </select>
+            <select id="camp-objective">
+              <option value="ventas">Ventas</option>
+              <option value="trafico">Trafico</option>
+              <option value="leads">Leads</option>
+            </select>
+          </div>
+          <input id="camp-budget" type="number" min="2500" step="100" placeholder="Presupuesto diario CLP" />
+          <button class="btn" type="submit" title="Crea una campaña publicitaria">Crear campana</button>
+        </form>
+      </section>
+
+      <section class="section">
+        <h3>Mis campanas</h3>
+        <div id="campaigns-list" class="list"></div>
+      </section>
+
+      <section class="section">
+        <h3>Conectar canal publicitario</h3>
+        <form id="channel-form" class="form-grid">
+          <div class="split-2">
+            <select id="ch-channel">
+              <option value="meta">Meta Ads</option>
+              <option value="google">Google Ads</option>
+              <option value="tiktok">TikTok Ads</option>
+            </select>
+            <input id="ch-account" placeholder="Account / Advertiser ID" />
+          </div>
+          <input id="ch-token" type="password" placeholder="Access Token" autocomplete="new-password" />
+          <button class="btn" type="submit" title="Conecta tu cuenta de publicidad">Conectar canal</button>
+        </form>
+        <div id="channels-list" class="list"></div>
+      </section>
+    </section>
+
+    <section id="screen-account" class="screen">
+      <section class="section">
+        <h3>Cuenta y conexion</h3>
+        <div class="item-sub">1. Verifica /health y /shopify/config</div>
+        <div class="item-sub">2. Si aparece 401 en datos, instala OAuth en /auth?shop=tu-tienda.myshopify.com</div>
+        <div class="item-sub">3. Mantener ngrok activo para pruebas externas</div>
+      </section>
+
+      <section class="section">
+        <h3>Estado runtime</h3>
+        <div id="toast" class="alert success" style="display:none;"></div>
+      </section>
+    </section>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Navegación principal">
+    <button class="nav-btn active" data-tab="home" title="Panel principal y KPIs"><strong>Inicio</strong>KPIs</button>
+    <button class="nav-btn" data-tab="products" title="Gestión de productos"><strong>Productos</strong>Catálogo</button>
+    <button class="nav-btn" data-tab="orders" title="Órdenes y ventas"><strong>Ordenes</strong>Ventas</button>
+    <button class="nav-btn" data-tab="campaigns" title="Campañas publicitarias"><strong>Campanas</strong>Ads</button>
+    <button class="nav-btn" data-tab="account" title="Estado de cuenta y conexión"><strong>Cuenta</strong>Estado</button>
+  </nav>
+
+  <!-- Tour visual accesible -->
+  <button id="tour-btn" class="btn" style="position:fixed;bottom:100px;right:18px;z-index:1000;">Guía rápida</button>
+  <div id="tour-modal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.45);z-index:2000;align-items:center;justify-content:center;">
+    <div style="background:#fff;max-width:340px;padding:24px 18px 18px 18px;border-radius:18px;box-shadow:0 4px 32px #0002;position:relative;">
+      <button id="tour-close" style="position:absolute;top:8px;right:12px;font-size:1.2em;background:none;border:none;">✕</button>
+      <div id="tour-content" style="font-size:1rem;line-height:1.5;"></div>
+      <div style="margin-top:18px;text-align:right;">
+        <button id="tour-prev" class="btn" style="margin-right:8px;">Anterior</button>
+        <button id="tour-next" class="btn">Siguiente</button>
+      </div>
+    </div>
+  </div>
+  <script src="/app.js"></script>
+</body>
+</html>

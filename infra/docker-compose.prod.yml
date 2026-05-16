@@ -1,0 +1,37 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - SHOPIFY_API_KEY=${SHOPIFY_API_KEY}
+      - SHOPIFY_API_SECRET=${SHOPIFY_API_SECRET}
+      - DB_HOST=${DB_HOST}
+      - DB_USER=${DB_USER}
+      - DB_PASS=${DB_PASS}
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vitto.rule=Host(`tu-dominio.com`)"
+      - "traefik.http.routers.vitto.entrypoints=web,websecure"
+      - "traefik.http.routers.vitto.tls.certresolver=letsencrypt"
+  traefik:
+    image: traefik:v2.10
+    command:
+      - --api.insecure=true
+      - --providers.docker=true
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge=true
+      - --certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web
+      - --certificatesresolvers.letsencrypt.acme.email=tu@email.com
+      - --certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./letsencrypt:/letsencrypt

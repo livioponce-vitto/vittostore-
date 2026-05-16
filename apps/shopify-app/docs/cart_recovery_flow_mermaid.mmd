@@ -1,0 +1,10 @@
+flowchart TD
+    A[Carrito abandonado detectado] --> B[Webhook o evento interno]
+    B --> C[Creación registro en base de datos]
+    C --> D[Job NotificationJob evalúa carritos]
+    D --> E[Envío de notificación al cliente]
+    E --> F[Cliente recupera carrito]
+    F --> G[Actualización de estado a recuperado]
+    G --> H[Fin del flujo]
+    E -- No recupera --> I[Reintentos o cierre de secuencia]
+    I --> H

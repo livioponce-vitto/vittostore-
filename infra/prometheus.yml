@@ -1,0 +1,6 @@
+global:
+  scrape_interval: 15s
+scrape_configs:
+  - job_name: 'vittostore-app'
+    static_configs:
+      - targets: ['host.docker.internal:3000'] # Cambia si tu app corre en otro host o puerto

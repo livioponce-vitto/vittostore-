@@ -1,0 +1,46 @@
+# Dependencies
+**/node_modules/
+**/.pnp.*
+
+# Build outputs
+**/dist/
+**/build/
+**/.next/
+**/coverage/
+
+# Environment
+**/.env
+**/.env.local
+**/.env.*.local
+!**/.env.example
+!**/.env.test.example
+
+# Sessions y datos sensibles
+**/config/sessions/
+**/sessions/
+**/.wwebjs_auth/
+**/baileys_auth/
+**/.session/
+
+# Logs
+**/logs/
+**/*.log
+npm-debug.log*
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# Temporales
+*.tmp
+*.bak
+*~
+DELETE_ME*
+**/cleanup_report*
+**/uninstall_status*
+
+# Workspace local
+workspace/

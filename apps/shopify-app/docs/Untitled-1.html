@@ -1,0 +1,1076 @@
+<!-- Home - VITTOSTORE (New Style) -->
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100..700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-dim": "#eed4d7",
+                      "on-tertiary": "#ffffff",
+                      "on-surface-variant": "#594044",
+                      "primary": "#9c0040",
+                      "outline-variant": "#e1bec3",
+                      "on-error-container": "#93000a",
+                      "surface-container-low": "#fff0f1",
+                      "surface-container-high": "#fde2e5",
+                      "surface-bright": "#fff8f7",
+                      "surface": "#fff8f7",
+                      "on-secondary-container": "#745c00",
+                      "on-secondary-fixed": "#241a00",
+                      "on-primary-fixed": "#3f0015",
+                      "inverse-surface": "#3d2c2f",
+                      "secondary-container": "#fed65b",
+                      "tertiary": "#005a2f",
+                      "secondary": "#735c00",
+                      "on-tertiary-container": "#98f8b5",
+                      "on-primary-fixed-variant": "#90003a",
+                      "on-tertiary-fixed-variant": "#00522b",
+                      "primary-fixed-dim": "#ffb2bf",
+                      "tertiary-fixed": "#97f7b3",
+                      "surface-tint": "#b8134f",
+                      "surface-container-lowest": "#ffffff",
+                      "on-secondary": "#ffffff",
+                      "on-error": "#ffffff",
+                      "on-tertiary-fixed": "#00210e",
+                      "on-background": "#26181a",
+                      "secondary-fixed": "#ffe088",
+                      "tertiary-fixed-dim": "#7bda99",
+                      "surface-variant": "#f7dcdf",
+                      "tertiary-container": "#00753f",
+                      "surface-container": "#ffe9eb",
+                      "background": "#fff8f7",
+                      "primary-container": "#c21e56",
+                      "secondary-fixed-dim": "#e9c349",
+                      "inverse-on-surface": "#ffecee",
+                      "outline": "#8d7074",
+                      "on-primary-container": "#ffdbdf",
+                      "on-primary": "#ffffff",
+                      "on-surface": "#26181a",
+                      "error-container": "#ffdad6",
+                      "surface-container-highest": "#f7dcdf",
+                      "primary-fixed": "#ffd9de",
+                      "on-secondary-fixed-variant": "#574500",
+                      "inverse-primary": "#ffb2bf",
+                      "error": "#ba1a1a"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "md": "24px",
+                      "gutter": "24px",
+                      "container-max": "1280px",
+                      "sm": "12px",
+                      "xs": "4px",
+                      "xl": "80px",
+                      "lg": "48px",
+                      "base": "8px"
+              },
+              "fontFamily": {
+                      "label-caps": ["Lexend"],
+                      "headline-md": ["Lexend"],
+                      "headline-lg": ["Lexend"],
+                      "body-lg": ["Lexend"],
+                      "display-xl": ["Lexend"],
+                      "body-md": ["Lexend"]
+              },
+              "fontSize": {
+                      "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "600"}],
+                      "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "300"}],
+                      "display-xl": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "500"}],
+                      "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "300"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-cream-brand { background-color: #FDF5E6; }
+        .text-rose-brand { color: #C21E56; }
+        .shadow-brand { box-shadow: 0 4px 20px rgba(194, 30, 86, 0.05); }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-surface font-body-md selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-cream-brand dark:bg-stone-950 border-b border-[#C21E56]/10 dark:border-rose-900/30 shadow-sm shadow-rose-900/5">
+<div class="flex items-center gap-4">
+<button class="text-rose-brand hover:opacity-80 transition-opacity active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+</div>
+<div class="font-lexend uppercase tracking-[0.2em] text-sm text-xl font-bold tracking-widest text-rose-brand dark:text-rose-400">
+            VITTOSTORE
+        </div>
+<div class="flex items-center gap-4">
+<button class="text-rose-brand hover:opacity-80 transition-opacity active:scale-95 duration-150">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+</button>
+</div>
+</header>
+<main class="pt-16 pb-24 md:pb-0">
+<!-- Hero Section -->
+<section class="relative h-[751px] w-full overflow-hidden flex items-center justify-center">
+<img alt="Superior Beauty Hero" class="absolute inset-0 w-full h-full object-cover grayscale-[20%]" data-alt="Premium cosmetic products arranged on a marble surface with soft editorial lighting and deep rose floral accents" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD0hhCP7WKCsKwqsCgdSJ6QvYombyYzmndUXt16Kjf-fCpBZlEomFx2xeXu0yKA4mnRP6swVtVAOuSSQgGX683DpZurFIsUKgn6DokgMThkndqFdlDTALIVZcW1BpXfqHJFGYKLXbeRaMFY4gjhjONALMsKztqGFawAjBam15Ppj2OBB-uvUSMHv8jv6V2XCmbBEnUgZfViDK8ZNasuP_fZUMKJrRsEWvX0lY40aT-bxmgBvKTMEjpnRISOU-eDSWvE0v0Yja8Qxtqo"/>
+<div class="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent"></div>
+<div class="relative z-10 text-center max-w-4xl px-gutter">
+<span class="font-label-caps text-label-caps text-rose-brand mb-4 block">AUTOCUIDADO DE NIVEL SUPERIOR</span>
+<h1 class="font-display-xl text-display-xl text-on-surface mb-6 tracking-tight leading-none">LA CIENCIA DE LA BELLEZA SUPERIOR</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-lg max-w-2xl mx-auto">Donde la precisión clínica se encuentra con el lujo botánico. Descubre una selección curada de belleza y bienestar de alto rendimiento.</p>
+<div class="flex flex-wrap justify-center gap-md">
+<button class="bg-primary-container text-on-primary-container px-xl py-4 rounded-full font-label-caps text-label-caps shadow-brand hover:opacity-90 transition-all active:scale-95">EXPLORAR COLECCIÓN</button>
+<button class="border border-primary-container text-rose-brand px-xl py-4 rounded-full font-label-caps text-label-caps hover:bg-primary-container/5 transition-all">NUESTRA FILOSOFÍA</button>
+</div>
+</div>
+</section>
+<!-- Categories Bento Grid -->
+<section class="py-xl container mx-auto px-gutter">
+<div class="mb-lg">
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Categorías Curadas</h2>
+<div class="h-1 w-12 bg-primary-container mt-2"></div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-12 gap-md h-[600px] md:h-[500px]">
+<div class="md:col-span-8 group relative overflow-hidden rounded-xl">
+<img alt="Beauty Category" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Close up of serum dropper with high-end aesthetic lighting and clean minimalist background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAwOPGRcpSmG-zh4xfAnqGCXJ5ICGCsDb9b8bUqwhQ28ZukEJKzecGXxuY9afyRlfbeJpw04nfV1aKjyX1kSPdtX-uzmnEzTjM-wlMAo8GFEhM1-0XKXqq5gDxdTv5YcrGLIEXOyozGUPjdc2Q8gjwuxwd0zbiSTbLqpnm09MAsedbcR19FG32DgEXFHJG24uf6j-5xxQzkLitJzLq-THkjA3Wr2bhoawKV5DbdTM2O_WO_Dd82w379f-BsWTe6_vUuQdqiyGTBmiF2"/>
+<div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all"></div>
+<div class="absolute bottom-md left-md">
+<h3 class="font-headline-md text-headline-md text-white">Belleza</h3>
+<p class="text-white/80 font-body-md">Cuidado clínico para resultados radiantes</p>
+</div>
+</div>
+<div class="md:col-span-4 grid grid-rows-2 gap-md">
+<div class="group relative overflow-hidden rounded-xl">
+<img alt="Personal Care Category" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Luxury personal care bottles in a sun-drenched minimalist bathroom setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiDyudkpG3qUrmrpyn_Klafp9YqkOrJbB3UciPHWrGCeMHyN6_QdEVCy6x2hvH45hQwtkA6Iq7g8rEUf3t6m0UuLDBKjLUdvd2npFTGh_94MIGmG4stVZ4umBdTz2qP76l9Xgv4ClAZbMfolzOz3ldBDoUXOZF44mhBq99nx4Qm_zsoTSF0QxtVlg8GDZL9nql470xug-MfmXKfk5XYKeXMGpROdDH05FPkhWt8LFpXCfKZHvmn0CUrKVHkPdvvjbcYwFmmBuvdsUx"/>
+<div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all"></div>
+<div class="absolute bottom-md left-md">
+<h3 class="font-headline-md text-headline-md text-white">Cuidado Personal</h3>
+</div>
+</div>
+<div class="group relative overflow-hidden rounded-xl">
+<img alt="Supplements Category" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="Elegant supplement capsules and natural ingredients on a soft fabric texture" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCmG9r9_mM6CZo7aKomcUuARJUKdW2Otq4FYUTOgm3kJspV1ZfgfRyNQKHpjgC8EO3SPmSJNDX6A_zS8KkNYXq_liBOm81Ms4HiGsP6nlTXPw5XnY_w9tr9DkB8B25ZxVTk3r-GQLrt18ew_B_mdvLbxRGdYC6KjgwVEPQ9XsQhYCSSeXOprjR02NMPtIsFSYcuNU8JF_b3EvBB1cJyRwr23E6GMGaSYZN3lO0es6B3NYZbVLyxxPONtIgCrNK8bmdOL26oHnCYTv88"/>
+<div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all"></div>
+<div class="absolute bottom-md left-md">
+<h3 class="font-headline-md text-headline-md text-white">Suplementos</h3>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Featured Products -->
+<section class="py-xl bg-surface-container-low">
+<div class="container mx-auto px-gutter">
+<div class="flex justify-between items-end mb-lg">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Los Esenciales</h2>
+<p class="font-body-md text-on-surface-variant">Nuestras fórmulas favoritas</p>
+</div>
+<a class="text-rose-brand font-label-caps text-label-caps border-b border-primary-container pb-1" href="#">Ver Todo</a>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-gutter">
+<!-- Product Card 1 -->
+<div class="group">
+<div class="relative aspect-[3/4] mb-md overflow-hidden rounded-xl bg-white shadow-brand">
+<img alt="Radiance Serum" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="Luxury facial oil bottle on a reflective white surface with soft pink ambient glow" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBv_HoKHqjsyIPyQkiDfXGAXpnGTBRahBuVK8bI1HdYhqobxVfPzdmg3X2iGGzW9CFkwVBbJkWqgtJtdmGjE8ggSRoSRjfC792sSRPY3X12gonGtFdVN46Vdp_rDhcw1QCI1nkK-_EBGiPiFFmEiiKbyzyOTJS6wGlgsTQ1vIGdvWlM_eQaIcFdvKWuXB63d4BiAR_lac4RLqu_4s0NLHQPPf6D4Z24sDD8btk4wDzX2T1Vpg0u4IHHyJvCOyEac_0Z-nLK7xdY6Rgq"/>
+<button class="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm p-3 rounded-full text-rose-brand shadow-lg hover:bg-primary-container hover:text-white transition-all w-12 h-12 flex items-center justify-center active:scale-90">
+<span class="material-symbols-outlined" data-icon="add_shopping_cart">add_shopping_cart</span>
+</button>
+<div class="absolute top-4 left-4 bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full font-label-caps text-[10px]">NUEVO</div>
+</div>
+<h3 class="font-body-md text-on-surface font-semibold truncate">Radiance Elixir Serum</h3>
+<p class="font-label-caps text-on-surface-variant text-[10px] mb-2 uppercase tracking-widest">CUIDADO DE LA PIEL</p>
+<p class="font-headline-md text-rose-brand">$42.990 <span class="text-xs font-body-md text-on-surface-variant ml-1">CLP</span></p>
+</div>
+<!-- Product Card 2 -->
+<div class="group">
+<div class="relative aspect-[3/4] mb-md overflow-hidden rounded-xl bg-white shadow-brand">
+<img alt="Moisturizing Balm" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="Minimalist skin cream jar with a smooth texture and soft warm lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQPH7KJrJHd9S0o4m2O4Dc4eXd-erkOeubUxpQxOFVpTfmdV_pjpZctGfKB4fKXhdLX_f49gYXT94lYagADJjOI8YSgIqXQPieh99RjtJP8Z6S_X8Wd5dxaL84Vvg7uwb8T8qvaUNMkO_4oM7MHPA0wzZ0dp3LsLIDGyGS4X_1pJo7Q4LfLQJS7mrgSm66vE4sCRNkstLgD7o4hQ4NtXgPlPjpiqUNt7m_Nh9qD91CkG4CZ-b9Q6K-1HU9Cxw7noub1EJUCI9SWnOw"/>
+<button class="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm p-3 rounded-full text-rose-brand shadow-lg hover:bg-primary-container hover:text-white transition-all w-12 h-12 flex items-center justify-center active:scale-90">
+<span class="material-symbols-outlined" data-icon="add_shopping_cart">add_shopping_cart</span>
+</button>
+</div>
+<h3 class="font-body-md text-on-surface font-semibold truncate">Velvet Night Balm</h3>
+<p class="font-label-caps text-on-surface-variant text-[10px] mb-2 uppercase tracking-widest">HIDRATANTES</p>
+<p class="font-headline-md text-rose-brand">$38.500 <span class="text-xs font-body-md text-on-surface-variant ml-1">CLP</span></p>
+</div>
+<!-- Product Card 3 -->
+<div class="group">
+<div class="relative aspect-[3/4] mb-md overflow-hidden rounded-xl bg-white shadow-brand">
+<img alt="Glow Vitamin" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="Modern supplement bottle with clean typography and organic leaf background blur" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBU4ItULhAXvpIhh29m9FCo5Uf3vbqVJKUJSmj-1utBe1eztRs94Nln57pvmQyzj6qOknRasu0l7imZcBYooNuUI5IM1C0b6T1Mo6GJLv73dh92BM0vCSTH4Z2EKaSXMDgxtfZcMNZ8h8nJSSatlWAGdwQi3lu4lNvMwqpD7DVRsO54rj9A9HP_IILkexo5j-BiVjAU4BNIMBNJavxarZG4pYpqBYWCVssQMybq8pNRbBrMScVkMrjtxP1rm4CRzrvhcXJG_fnWnZ96"/>
+<button class="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm p-3 rounded-full text-rose-brand shadow-lg hover:bg-primary-container hover:text-white transition-all w-12 h-12 flex items-center justify-center active:scale-90">
+<span class="material-symbols-outlined" data-icon="add_shopping_cart">add_shopping_cart</span>
+</button>
+</div>
+<h3 class="font-body-md text-on-surface font-semibold truncate">Inner Glow Vitamin C</h3>
+<p class="font-label-caps text-on-surface-variant text-[10px] mb-2 uppercase tracking-widest">SUPLEMENTOS</p>
+<p class="font-headline-md text-rose-brand">$24.900 <span class="text-xs font-body-md text-on-surface-variant ml-1">CLP</span></p>
+</div>
+<!-- Product Card 4 -->
+<div class="group">
+<div class="relative aspect-[3/4] mb-md overflow-hidden rounded-xl bg-white shadow-brand">
+<img alt="Purifying Mask" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" data-alt="Aesthetic clay mask in a ceramic bowl with artisanal wooden applicator" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAsKhG-E6PdwOSbzbSrDuapAso320nubrWnnJqfFCl-mIJbxAgT2SXOClFDcMeRV-MLPxwT5vLj7Tf-YGaqbSWHMIBrjnBYnILwQSrO6oNpsVvSVs4IUj_6rMUoz0avdi_SUMskFF1lzDaok235XMASal0fxR1aZZCI0RgSpF3am12h-AUwqMbcXaNRtjTrfMqTBwDJrQGQJvxYqLtHjuAvvWKInxFENrgtBxKZgvmK3JuAH1y8GofTZ3Ij6KK4O_e3w3_wz2LOf8Kb"/>
+<button class="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm p-3 rounded-full text-rose-brand shadow-lg hover:bg-primary-container hover:text-white transition-all w-12 h-12 flex items-center justify-center active:scale-90">
+<span class="material-symbols-outlined" data-icon="add_shopping_cart">add_shopping_cart</span>
+</button>
+</div>
+<h3 class="font-body-md text-on-surface font-semibold truncate">Rose Quartz Mask</h3>
+<p class="font-label-caps text-on-surface-variant text-[10px] mb-2 uppercase tracking-widest">TRATAMIENTOS</p>
+<p class="font-headline-md text-rose-brand">$32.000 <span class="text-xs font-body-md text-on-surface-variant ml-1">CLP</span></p>
+</div>
+</div>
+</div>
+</section>
+<!-- Personal Diagnostic Section -->
+<section class="py-xl container mx-auto px-gutter">
+<div class="bg-cream-brand rounded-2xl p-lg md:p-xl flex flex-col md:flex-row items-center gap-lg border border-[#C21E56]/5">
+<div class="flex-1">
+<span class="font-label-caps text-label-caps text-rose-brand mb-4 block">CUIDADO PERSONALIZADO</span>
+<h2 class="font-display-xl text-headline-lg md:text-display-xl text-on-surface mb-6">DIAGNÓSTICO DE PIEL</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-lg">¿No estás seguro por dónde empezar? Nuestra herramienta de diagnóstico científico analiza tus preocupaciones y estilo de vida para crear un régimen personalizado.</p>
+<button class="bg-primary-container text-on-primary-container px-lg py-4 rounded-full font-label-caps text-label-caps hover:shadow-lg transition-all flex items-center gap-3 active:scale-95">INICIAR TU ANÁLISIS <span class="material-symbols-outlined">arrow_forward</span></button>
+</div>
+<div class="flex-1 w-full max-w-md">
+<div class="relative">
+<div class="absolute -top-4 -left-4 w-32 h-32 bg-primary-container/10 rounded-full blur-3xl"></div>
+<div class="absolute -bottom-4 -right-4 w-32 h-32 bg-secondary-container/20 rounded-full blur-3xl"></div>
+<div class="relative bg-white p-8 rounded-xl shadow-brand border border-[#C21E56]/5">
+<div class="space-y-6">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container flex items-center justify-center rounded-full text-rose-brand">
+<span class="material-symbols-outlined" data-icon="biotech">biotech</span>
+</div>
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant uppercase">Paso 1</p>
+<p class="font-body-md font-semibold">Análisis Científico</p>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container flex items-center justify-center rounded-full text-rose-brand">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+</div>
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant uppercase">Paso 2</p>
+<p class="font-body-md font-semibold">Estilo de Vida</p>
+</div>
+</div>
+<div class="flex items-center gap-4 opacity-40">
+<div class="w-12 h-12 bg-surface-container flex items-center justify-center rounded-full text-rose-brand">
+<span class="material-symbols-outlined" data-icon="medication">medication</span>
+</div>
+<div>
+<p class="font-label-caps text-[10px] text-on-surface-variant uppercase">Paso 3</p>
+<p class="font-body-md font-semibold">Régimen Personalizado</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-12 px-8 flex flex-col md:flex-row justify-between items-center gap-6 bg-cream-brand dark:bg-stone-950 border-t border-[#C21E56]/5 pb-24">
+<div class="font-lexend text-xs tracking-tight text-stone-400"><span class="font-bold text-rose-brand">VITTOSTORE</span> © 2024. Cuidado Personal de Lujo.</div>
+<div class="flex gap-8">
+<a class="font-lexend text-xs tracking-tight text-stone-400 hover:text-rose-brand transition-colors" href="#">Privacidad</a>
+<a class="font-lexend text-xs tracking-tight text-stone-400 hover:text-rose-brand transition-colors" href="#">Envíos</a>
+<a class="font-lexend text-xs tracking-tight text-stone-400 hover:text-rose-brand transition-colors" href="#">Contacto</a>
+</div>
+</footer>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 pb-safe bg-white/80 dark:bg-stone-900/80 backdrop-blur-md border-t border-stone-100 dark:border-stone-800 shadow-[0_-4px_20px_rgba(194,30,86,0.05)] rounded-t-2xl md:hidden">
+<a class="flex flex-col items-center justify-center text-rose-brand bg-[#C21E56]/5 dark:bg-rose-400/10 rounded-full px-4 py-1 tap-highlight-transparent active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-lexend text-[10px] uppercase tracking-wider">Inicio</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-400 hover:text-rose-brand tap-highlight-transparent active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
+<span class="font-lexend text-[10px] uppercase tracking-wider">Tienda</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-400 hover:text-rose-brand tap-highlight-transparent active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+<span class="font-lexend text-[10px] uppercase tracking-wider">Deseos</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-400 hover:text-rose-brand tap-highlight-transparent active:scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-lexend text-[10px] uppercase tracking-wider">Perfil</span>
+</a>
+</nav>
+</body></html>
+
+<!-- Catálogo - VITTOSTORE -->
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary": "#ffffff",
+                      "secondary": "#735c00",
+                      "on-tertiary-fixed": "#00210e",
+                      "surface-dim": "#eed4d7",
+                      "on-secondary": "#ffffff",
+                      "on-secondary-fixed-variant": "#574500",
+                      "outline-variant": "#e1bec3",
+                      "tertiary-fixed": "#97f7b3",
+                      "on-primary-fixed": "#3f0015",
+                      "surface-bright": "#fff8f7",
+                      "primary": "#9c0040",
+                      "on-tertiary-fixed-variant": "#00522b",
+                      "surface-container": "#ffe9eb",
+                      "secondary-fixed": "#ffe088",
+                      "primary-fixed-dim": "#ffb2bf",
+                      "on-primary-container": "#ffdbdf",
+                      "outline": "#8d7074",
+                      "on-primary": "#ffffff",
+                      "surface": "#fff8f7",
+                      "on-primary-fixed-variant": "#90003a",
+                      "inverse-surface": "#3d2c2f",
+                      "surface-container-highest": "#f7dcdf",
+                      "primary-fixed": "#ffd9de",
+                      "on-secondary-fixed": "#241a00",
+                      "on-error": "#ffffff",
+                      "surface-tint": "#b8134f",
+                      "secondary-container": "#fed65b",
+                      "error": "#ba1a1a",
+                      "on-background": "#26181a",
+                      "error-container": "#ffdad6",
+                      "tertiary-container": "#00753f",
+                      "primary-container": "#c21e56",
+                      "surface-container-low": "#fff0f1",
+                      "surface-container-high": "#fde2e5",
+                      "on-error-container": "#93000a",
+                      "tertiary-fixed-dim": "#7bda99",
+                      "on-surface-variant": "#594044",
+                      "tertiary": "#005a2f",
+                      "on-surface": "#26181a",
+                      "background": "#fff8f7",
+                      "surface-variant": "#f7dcdf",
+                      "secondary-fixed-dim": "#e9c349",
+                      "inverse-primary": "#ffb2bf",
+                      "surface-container-lowest": "#ffffff",
+                      "inverse-on-surface": "#ffecee",
+                      "on-tertiary-container": "#98f8b5",
+                      "on-secondary-container": "#745c00"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "xl": "80px",
+                      "gutter": "24px",
+                      "container-max": "1280px",
+                      "md": "24px",
+                      "xs": "4px",
+                      "base": "8px",
+                      "sm": "12px",
+                      "lg": "48px"
+              },
+              "fontFamily": {
+                      "label-caps": ["Lexend"],
+                      "headline-md": ["Lexend"],
+                      "display-xl": ["Lexend"],
+                      "body-lg": ["Lexend"],
+                      "headline-lg": ["Lexend"],
+                      "body-md": ["Lexend"]
+              },
+              "fontSize": {
+                      "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "600"}],
+                      "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "400"}],
+                      "display-xl": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "500"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "300"}],
+                      "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                      "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "300"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        body { background-color: #FDF5E6; }
+        .tap-highlight-none { -webkit-tap-highlight-color: transparent; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="font-body-md text-on-background selection:bg-primary-container selection:text-on-primary-container">
+<!-- Top Navigation Shell -->
+<header class="fixed top-0 left-0 w-full z-50 bg-[#FDF5E6] dark:bg-stone-950 shadow-[0_4px_20px_rgba(194,30,86,0.05)] border-none">
+<div class="flex justify-between items-center w-full px-6 py-4">
+<button class="text-rose-700 dark:text-rose-400 hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="font-lexend font-bold tracking-widest text-rose-800 dark:text-rose-300 text-xl">VITTOSTORE</h1>
+<button class="text-rose-700 dark:text-rose-400 hover:opacity-80 transition-opacity">
+<span class="material-symbols-outlined" data-icon="support_agent">support_agent</span>
+</button>
+</div>
+</header>
+<main class="pt-24 pb-32 max-w-container-max mx-auto px-6">
+<!-- Header Section -->
+<section class="mb-lg">
+<h2 class="font-display-xl text-display-xl text-primary mb-sm">Nuestra Colección</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+                Descubre nuestra selección curada de productos premium diseñados para elevar tu bienestar y potenciar tu belleza natural desde el interior.
+            </p>
+</section>
+<!-- Filters & Sort -->
+<section class="flex flex-col md:flex-row md:items-center justify-between gap-md mb-lg">
+<div class="flex items-center gap-sm overflow-x-auto hide-scrollbar pb-2"><button class="bg-primary text-on-primary px-6 py-2 rounded-full font-label-caps text-label-caps whitespace-nowrap">Todos los Productos</button><button class="bg-white border border-outline-variant text-on-surface-variant px-6 py-2 rounded-full font-label-caps text-label-caps whitespace-nowrap hover:bg-surface-container-low transition-colors">Belleza</button><button class="bg-white border border-outline-variant text-on-surface-variant px-6 py-2 rounded-full font-label-caps text-label-caps whitespace-nowrap hover:bg-surface-container-low transition-colors">Cuidado Personal</button><button class="bg-white border border-outline-variant text-on-surface-variant px-6 py-2 rounded-full font-label-caps text-label-caps whitespace-nowrap hover:bg-surface-container-low transition-colors">Suplementos</button></div>
+<div class="relative inline-block w-full md:w-auto">
+<select class="appearance-none bg-white border-b-2 border-primary-container text-on-surface-variant py-2 pl-2 pr-10 font-label-caps text-label-caps focus:outline-none w-full md:w-48 focus:bg-white"><option>Ordenar por: Destacados</option><option>Precio: Menor a Mayor</option><option>Precio: Mayor a Menor</option><option>Lo más nuevo</option></select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-primary">
+<span class="material-symbols-outlined" data-icon="expand_more">expand_more</span>
+</div>
+</div>
+</section>
+<!-- Product Grid -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-md">
+<!-- Product Card 1 -->
+<div class="group bg-white rounded-xl shadow-[0_4px_20px_rgba(194,30,86,0.05)] overflow-hidden transition-all hover:shadow-[0_8px_30px_rgba(194,30,86,0.1)]">
+<div class="relative aspect-[4/5] bg-surface-container-low">
+<img alt="Product" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Premium glass bottle of facial serum on a clean white marble surface with soft pink floral petals around it" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAiooS-Q497Fb8GrlypcCSvy3TWcYbN0HRPeBkHKZIhQ9v7ZxdOSf4K3p7ZjfLYwAoa1KwgaAZsDYP0knFeH55XhSKCCM-SazXN2SpUWSYJvy6l5wS1TXDTxiSjivQJlNH-AlnZWpYbWXHL217ez2sVOfC5PXyJQQJOIQx2KVKMOmwenG2G9csxhO70YCl94V2rd-aZiertzrvHX20rIj2O39XjJyHUs1FIbjqnjLa-VZhxBDTqeZ1mCkcCk_7Yur5pKl5RNCnQ3Qar"/>
+<div class="absolute top-4 left-4">
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full font-label-caps text-[10px] tracking-widest uppercase">Nuevo</span>
+</div>
+</div>
+<div class="p-md"><p class="font-label-caps text-[10px] text-outline tracking-widest uppercase mb-1">Belleza</p><h3 class="font-headline-md text-headline-md text-on-surface mb-2">Elixir de Resplandor</h3><div class="flex justify-between items-center"><span class="font-headline-md text-headline-md text-primary">$48.000 CLP</span><button class="bg-primary text-on-primary w-12 h-12 rounded-full flex items-center justify-center hover:bg-primary-container transition-colors active:scale-95 duration-200"><span class="material-symbols-outlined" data-icon="add_shopping_cart">$48.000 CLP</span></button></div></div>
+</div>
+<!-- Product Card 2 -->
+<div class="group bg-white rounded-xl shadow-[0_4px_20px_rgba(194,30,86,0.05)] overflow-hidden transition-all hover:shadow-[0_8px_30px_rgba(194,30,86,0.1)]">
+<div class="relative aspect-[4/5] bg-surface-container-low">
+<img alt="Product" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Minimalist wooden pill organizer with various colorful holistic supplements and fresh mint leaves on a cream background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjajS5_YmcRKSWSk9Patb6vSlL-yBiEzuwSlAlD_wtmkmFEBXFCdYraUjWLGUHynBVfxnPTzBCe7tAOL_E2cyCwqBTyic-SWIAl8bMyC8wsttU9iO2Q24agyc4p-pieAoK2bNAC1R3DUdfoip1PSXHqDRt8D9MRoRtUu0Us_B6AlS8vx-JJxMfzOrmHWR_h5DIb0X-2z6crsjbb8oSxAsKubljnOheKrN2R2KX6FSkLMzuhM88oAH7Ih57x6-7YKpsl1TPFAJ7mUpe"/>
+<div class="absolute top-4 left-4">
+<span class="bg-tertiary-container text-on-tertiary-container px-3 py-1 rounded-full font-label-caps text-[10px] tracking-widest uppercase">Orgánico</span>
+</div>
+</div>
+<div class="p-md"><p class="font-label-caps text-[10px] text-outline tracking-widest uppercase mb-1">Suplementos</p><h3 class="font-headline-md text-headline-md text-on-surface mb-2">Complejo Vitalidad Diaria</h3><div class="flex justify-between items-center"><span class="font-headline-md text-headline-md text-primary">$35.000 CLP</span><button class="bg-primary text-on-primary w-12 h-12 rounded-full flex items-center justify-center hover:bg-primary-container transition-colors active:scale-95 duration-200"><span class="material-symbols-outlined" data-icon="add_shopping_cart">$35.000 CLP</span></button></div></div>
+</div>
+<!-- Product Card 3 -->
+<div class="group bg-white rounded-xl shadow-[0_4px_20px_rgba(194,30,86,0.05)] overflow-hidden transition-all hover:shadow-[0_8px_30px_rgba(194,30,86,0.1)]">
+<div class="relative aspect-[4/5] bg-surface-container-low">
+<img alt="Product" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Artisanal clay soap bar on a bamboo tray next to a soft linen towel and dried lavender sprigs, morning light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCj1EjTB4mVlvG-9ca759uTMswK5I6s7DX8u9ZIkVbfh7KM5N_qWyw-Ha2a5ql8JOnIhmgZHcmx1TQItbk7i2q1dERW0A8Q4aM815Unbw-Rgi-UJfGvZ6SFYaBiXuTyInS6aNJdFPnlnrLHCmbNr279ulWafixKi1bYOSt-9iOnwzZCpb5EZrscoJgpEBjCg7w1xc0IxP-rlWOtg_Cy8Z65KywgMYOj0UFSiL0NeLenWACFJ8fzhAbJ57wsdDnjmRlBJhfpjdLqdBxw"/>
+<div class="absolute top-4 left-4">
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full font-label-caps text-[10px] tracking-widest uppercase text-secondary">Nuevo</span>
+</div>
+</div>
+<div class="p-md"><p class="font-label-caps text-[10px] text-outline tracking-widest uppercase mb-1">Cuidado Personal</p><h3 class="font-headline-md text-headline-md text-on-surface mb-2">Barra Limpiadora Botánica</h3><div class="flex justify-between items-center"><span class="font-headline-md text-headline-md text-primary">$18.000 CLP</span><button class="bg-primary text-on-primary w-12 h-12 rounded-full flex items-center justify-center hover:bg-primary-container transition-colors active:scale-95 duration-200"><span class="material-symbols-outlined" data-icon="add_shopping_cart">$18.000 CLP</span></button></div></div>
+</div>
+<!-- Product Card 4 -->
+<div class="group bg-white rounded-xl shadow-[0_4px_20px_rgba(194,30,86,0.05)] overflow-hidden transition-all hover:shadow-[0_8px_30px_rgba(194,30,86,0.1)]">
+<div class="relative aspect-[4/5] bg-surface-container-low">
+<img alt="Product" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Modern white tub of moisturizing cream sitting on a stack of clean aesthetic magazines with soft shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-BPT3OhHYufCbM1C_Ddj9EEVjTXn5wokHtIQXNVAKCWOW0rXbzZBVlTbKesm-7EmiwsRBjPK5zfVNNcECKCgMeDwSa43fhq6ApyZ71c8ZiIco8NblVi9CG-mKtANVs0xFnNRlLGXiu0sMaw4mRhSogwZXa2CyGctRc8NNp0OmToKDc8_TFh8O9SB2V9RFVOkZMLdB59HT6xBz41RcS_36gVm02cnBHrbuYYyvt_qi_EcCCVH9ndWkXjYU7cRYSiqE3cKnCTBfXKca"/>
+<div class="absolute top-4 left-4">
+<span class="bg-tertiary-container text-on-tertiary-container px-3 py-1 rounded-full font-label-caps text-[10px] tracking-widest uppercase">Ecológico</span>
+</div>
+</div>
+<div class="p-md"><p class="font-label-caps text-[10px] text-outline tracking-widest uppercase mb-1">Belleza</p><h3 class="font-headline-md text-headline-md text-on-surface mb-2">Manteca Corporal Batida</h3><div class="flex justify-between items-center"><span class="font-headline-md text-headline-md text-primary">$29.000 CLP</span><button class="bg-primary text-on-primary w-12 h-12 rounded-full flex items-center justify-center hover:bg-primary-container transition-colors active:scale-95 duration-200"><span class="material-symbols-outlined" data-icon="add_shopping_cart">$29.000 CLP</span></button></div></div>
+</div>
+<!-- Product Card 5 (Repeated for Grid demonstration) -->
+<div class="group bg-white rounded-xl shadow-[0_4px_20px_rgba(194,30,86,0.05)] overflow-hidden transition-all hover:shadow-[0_8px_30px_rgba(194,30,86,0.1)]">
+<div class="relative aspect-[4/5] bg-surface-container-low">
+<img alt="Product" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Luxury rose gold dropper bottle on a reflective surface with soft pink ambient lighting and a high-end feel" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6U-9P1EKMxrEsX2uBhbpV-2hAMlRLG8o9Vd0mo5RQMgz_cjcgSnow7fmECtyNWbwKqR-j9Zz2CRrskVfddwxNkyhX7Qb48b6tR_-lw96Ns4U-67UD9T_ADVZ2OSMTajm3I05ELCQHpIJ4GS4kFbDPcRRgqDaScPGv7orE1FdOfXMv17hiVc3dJRiRrLWbagfkW_3RyNbxmGAK1l-ViJNl2ggkci4m2XjUSXgHzt-qxDfkpZmoZ7YRVBXLJdlzX_ZGcwKSnubN0a8q"/>
+<div class="absolute top-4 left-4">
+<span class="bg-secondary-container text-on-secondary-container px-3 py-1 rounded-full font-label-caps text-[10px] tracking-widest uppercase">Nuevo</span>
+</div>
+</div>
+<div class="p-md"><p class="font-label-caps text-[10px] text-outline tracking-widest uppercase mb-1">Belleza</p><h3 class="font-headline-md text-headline-md text-on-surface mb-2">Potenciador Vitamina C</h3><div class="flex justify-between items-center"><span class="font-headline-md text-headline-md text-primary">$55.000 CLP</span><button class="bg-primary text-on-primary w-12 h-12 rounded-full flex items-center justify-center hover:bg-primary-container transition-colors active:scale-95 duration-200"><span class="material-symbols-outlined" data-icon="add_shopping_cart">$55.000 CLP</span></button></div></div>
+</div>
+<!-- Product Card 6 -->
+<div class="group bg-white rounded-xl shadow-[0_4px_20px_rgba(194,30,86,0.05)] overflow-hidden transition-all hover:shadow-[0_8px_30px_rgba(194,30,86,0.1)]">
+<div class="relative aspect-[4/5] bg-surface-container-low">
+<img alt="Product" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" data-alt="Glass jar of natural herbal supplement powder on a light stone surface with a wooden scoop" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2RExa-RJW5RCN_R3GD3mvBEuIETzA16nYc2GCly9T2Isxya3Akcd4o_X3mJjTfTNQFUXLK3gH7hRmk4KwgCyuGcVhWV0XJkF9vL2f3uUpxfXmJKEDAJtFC2GfYZnBnJizlGmroiYkq-3bfpvZQ7BSivGILnaLApQjIHglTgMRG5mVmZsoR2bn-yfbidK2YLXwUIzw7nbYDJHuEguhJjFO7VBOGrD-KA3Cdds2Is1SRKo1zwA7-oPQpx0crTPKH3unTX_scmGjcBZ_"/>
+<div class="absolute top-4 left-4">
+<span class="bg-tertiary-container text-on-tertiary-container px-3 py-1 rounded-full font-label-caps text-[10px] tracking-widest uppercase">Orgánico</span>
+</div>
+</div>
+<div class="p-md"><p class="font-label-caps text-[10px] text-outline tracking-widest uppercase mb-1">Suplementos</p><h3 class="font-headline-md text-headline-md text-on-surface mb-2">Complejo Reparador Nocturno</h3><div class="flex justify-between items-center"><span class="font-headline-md text-headline-md text-primary">$42.000 CLP</span><button class="bg-primary text-on-primary w-12 h-12 rounded-full flex items-center justify-center hover:bg-primary-container transition-colors active:scale-95 duration-200"><span class="material-symbols-outlined" data-icon="add_shopping_cart">$42.000 CLP</span></button></div></div>
+</div>
+</section>
+<!-- Pagination -->
+<section class="mt-xl flex justify-center items-center gap-sm">
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-outline-variant text-primary hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined" data-icon="chevron_left">chevron_left</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-primary text-on-primary font-label-caps text-label-caps">1</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-outline-variant text-on-surface-variant hover:bg-surface-container-low transition-colors font-label-caps text-label-caps">2</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-outline-variant text-on-surface-variant hover:bg-surface-container-low transition-colors font-label-caps text-label-caps">3</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full bg-white border border-outline-variant text-primary hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined" data-icon="chevron_right">chevron_right</span>
+</button>
+</section>
+</main>
+<!-- Bottom Navigation Shell -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-3 bg-white/80 dark:bg-stone-900/80 backdrop-blur-md shadow-[0_-4px_20px_rgba(194,30,86,0.08)] border-t border-rose-100/20 dark:border-stone-800 rounded-t-3xl"><div class="flex flex-col items-center justify-center text-rose-700 dark:text-rose-400 scale-110 transition-transform tap-highlight-none"><span class="material-symbols-outlined" data-icon="storefront">storefront</span><span class="font-lexend text-[10px] font-medium uppercase tracking-widest mt-1">Tienda</span></div><div class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 tap-highlight-none hover:text-rose-600 dark:hover:text-rose-300"><span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span><span class="font-lexend text-[10px] font-medium uppercase tracking-widest mt-1">Bolsa</span></div><div class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 tap-highlight-none hover:text-rose-600 dark:hover:text-rose-300"><span class="material-symbols-outlined" data-icon="favorite">favorite</span><span class="font-lexend text-[10px] font-medium uppercase tracking-widest mt-1">Favoritos</span></div><div class="flex flex-col items-center justify-center text-stone-400 dark:text-stone-500 tap-highlight-none hover:text-rose-600 dark:hover:text-rose-300"><span class="material-symbols-outlined" data-icon="person">person</span><span class="font-lexend text-[10px] font-medium uppercase tracking-widest mt-1">Mi Cuenta</span></div></nav>
+<!-- Footer Shell -->
+<footer class="bg-[#FDF5E6] dark:bg-stone-950 border-t border-stone-200 dark:border-stone-800 pb-40">
+<div class="max-w-7xl mx-auto px-8 py-12 flex flex-col md:flex-row justify-between items-center gap-6">
+<div class="text-center md:text-left">
+<span class="font-lexend font-bold text-rose-800 dark:text-rose-300">VITTOSTORE</span>
+<p class="font-lexend text-sm tracking-wide text-stone-600 dark:text-stone-400 mt-1">© 2024 VITTOSTORE. Curated Wellness.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-6"><a class="font-lexend text-sm tracking-wide text-stone-600 dark:text-stone-400 hover:text-rose-800 dark:hover:text-rose-200 transition-colors" href="#">Envíos</a><a class="font-lexend text-sm tracking-wide text-stone-600 dark:text-stone-400 hover:text-rose-800 dark:hover:text-rose-200 transition-colors" href="#">Concierge WhatsApp</a><a class="font-lexend text-sm tracking-wide text-stone-600 dark:text-stone-400 hover:text-rose-800 dark:hover:text-rose-200 transition-colors" href="#">Privacidad</a><a class="font-lexend text-sm tracking-wide text-stone-600 dark:text-stone-400 hover:text-rose-800 dark:hover:text-rose-200 transition-colors" href="#">Sustentabilidad</a></div>
+</div>
+</footer>
+</body></html>
+
+<!-- Checkout - VITTOSTORE -->
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary": "#ffffff",
+                      "secondary": "#735c00",
+                      "on-tertiary-fixed": "#00210e",
+                      "surface-dim": "#eed4d7",
+                      "on-secondary": "#ffffff",
+                      "on-secondary-fixed-variant": "#574500",
+                      "outline-variant": "#e1bec3",
+                      "tertiary-fixed": "#97f7b3",
+                      "on-primary-fixed": "#3f0015",
+                      "surface-bright": "#fff8f7",
+                      "primary": "#9c0040",
+                      "on-tertiary-fixed-variant": "#00522b",
+                      "surface-container": "#ffe9eb",
+                      "secondary-fixed": "#ffe088",
+                      "primary-fixed-dim": "#ffb2bf",
+                      "on-primary-container": "#ffdbdf",
+                      "outline": "#8d7074",
+                      "on-primary": "#ffffff",
+                      "surface": "#fff8f7",
+                      "on-primary-fixed-variant": "#90003a",
+                      "inverse-surface": "#3d2c2f",
+                      "surface-container-highest": "#f7dcdf",
+                      "primary-fixed": "#ffd9de",
+                      "on-secondary-fixed": "#241a00",
+                      "on-error": "#ffffff",
+                      "surface-tint": "#b8134f",
+                      "secondary-container": "#fed65b",
+                      "error": "#ba1a1a",
+                      "on-background": "#26181a",
+                      "error-container": "#ffdad6",
+                      "tertiary-container": "#00753f",
+                      "primary-container": "#c21e56",
+                      "surface-container-low": "#fff0f1",
+                      "surface-container-high": "#fde2e5",
+                      "on-error-container": "#93000a",
+                      "tertiary-fixed-dim": "#7bda99",
+                      "on-surface-variant": "#594044",
+                      "tertiary": "#005a2f",
+                      "on-surface": "#26181a",
+                      "background": "#fff8f7",
+                      "surface-variant": "#f7dcdf",
+                      "secondary-fixed-dim": "#e9c349",
+                      "inverse-primary": "#ffb2bf",
+                      "surface-container-lowest": "#ffffff",
+                      "inverse-on-surface": "#ffecee",
+                      "on-tertiary-container": "#98f8b5",
+                      "on-secondary-container": "#745c00"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "xl": "80px",
+                      "gutter": "24px",
+                      "container-max": "1280px",
+                      "md": "24px",
+                      "xs": "4px",
+                      "base": "8px",
+                      "sm": "12px",
+                      "lg": "48px"
+              },
+              "fontFamily": {
+                      "label-caps": ["Lexend"],
+                      "headline-md": ["Lexend"],
+                      "display-xl": ["Lexend"],
+                      "body-lg": ["Lexend"],
+                      "headline-lg": ["Lexend"],
+                      "body-md": ["Lexend"]
+              },
+              "fontSize": {
+                      "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "600"}],
+                      "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "400"}],
+                      "display-xl": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "500"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "300"}],
+                      "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                      "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "300"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #FDF5E6;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="font-body-md text-on-surface">
+<header class="sticky top-0 z-50 bg-[#FDF5E6] shadow-[0_4px_20px_rgba(194,30,86,0.05)]">
+<div class="max-w-container-max mx-auto px-6 py-4 flex justify-between items-center">
+<div class="flex items-center gap-2"><span class="material-symbols-outlined text-rose-700 w-12 h-12 flex items-center justify-center" data-icon="arrow_back">arrow_back</span></div>
+<h1 class="font-lexend font-bold tracking-widest text-rose-800 text-xl">VITTOSTORE</h1>
+<div class="flex items-center gap-2"><span class="material-symbols-outlined text-rose-700 w-12 h-12 flex items-center justify-center" data-icon="support_agent" title="Soporte al Cliente">support_agent</span></div>
+</div>
+</header>
+<main class="max-w-container-max mx-auto px-6 py-xl lg:grid lg:grid-cols-12 lg:gap-xl">
+<div class="lg:col-span-7 flex flex-col gap-lg">
+<section class="flex flex-col gap-md">
+<h2 class="font-headline-lg text-headline-lg text-primary">Información del Cliente</h2>
+<form class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<div class="flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-1">Nombre Completo</label>
+<input class="w-full p-4 bg-surface-container-low border-none border-b border-primary-container focus:ring-0 focus:border-primary text-body-md font-body-md rounded-xl transition-all focus:bg-white focus:shadow-sm focus:border-[#C21E56]" placeholder="Ej: Valentina Rossi" type="text"/>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-1">Email</label>
+<input class="w-full p-4 bg-surface-container-low border-none border-b border-primary-container focus:ring-0 focus:border-primary text-body-md font-body-md rounded-xl transition-all focus:bg-white focus:shadow-sm focus:border-[#C21E56]" placeholder="valentina@example.com" type="email"/>
+</div>
+<div class="flex flex-col gap-xs">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-1">Teléfono</label>
+<input class="w-full p-4 bg-surface-container-low border-none border-b border-primary-container focus:ring-0 focus:border-primary text-body-md font-body-md rounded-xl transition-all focus:bg-white focus:shadow-sm focus:border-[#C21E56]" placeholder="+34 600 000 000" type="tel"/>
+</div>
+<div class="flex flex-col gap-xs md:col-span-2">
+<label class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-1">Dirección de Entrega</label>
+<textarea class="w-full p-4 bg-surface-container-low border-none border-b border-primary-container focus:ring-0 focus:border-primary text-body-md font-body-md rounded-xl transition-all focus:bg-white focus:shadow-sm focus:border-[#C21E56]" placeholder="Calle, número, piso, código postal y ciudad" rows="3"></textarea>
+</div>
+</form>
+</section>
+<section class="flex flex-col gap-md">
+<h2 class="font-headline-lg text-headline-lg text-primary">Método de Envío</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-sm">
+<div class="relative group cursor-pointer p-6 rounded-xl bg-white shadow-[0_4px_15px_rgba(194,30,86,0.05)] border-2 border-primary ring-2 ring-primary/10">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-caps text-label-caps text-secondary uppercase tracking-widest">Recomendado</span>
+<span class="material-symbols-outlined text-primary" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<h3 class="font-headline-md text-body-lg font-semibold text-on-surface mb-1">Envío Estándar Boutique</h3>
+<p class="text-body-md text-on-surface-variant">Entrega en 3-5 días hábiles</p>
+<p class="mt-4 font-headline-md text-primary font-bold">Gratis</p>
+</div>
+<div class="relative group cursor-pointer p-6 rounded-xl bg-white/50 border-2 border-transparent hover:border-primary-container transition-all">
+<div class="flex justify-between items-start mb-2">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase tracking-widest">Rápido</span>
+<span class="material-symbols-outlined text-outline-variant" data-icon="radio_button_unchecked">radio_button_unchecked</span>
+</div>
+<h3 class="font-headline-md text-body-lg font-semibold text-on-surface mb-1">Envío Express Prioritario</h3>
+<p class="text-body-md text-on-surface-variant">Entrega en 24-48 horas</p>
+<p class="mt-4 font-headline-md text-on-surface font-bold">$12.000 CLP</p>
+</div>
+</div>
+</section>
+<section class="flex flex-col gap-md">
+<h2 class="font-headline-lg text-headline-lg text-primary">Forma de Pago</h2>
+<div class="flex flex-col sm:flex-row gap-sm">
+<button class="flex-1 flex items-center justify-center gap-3 p-4 rounded-full border border-outline-variant hover:bg-surface-container transition-colors py-5 sm:py-4 px-6 active:bg-surface-container transition-all">
+<span class="material-symbols-outlined" data-icon="credit_card">credit_card</span>
+<span class="font-body-md font-medium">Tarjeta</span>
+</button>
+<button class="flex-1 flex items-center justify-center gap-3 p-4 rounded-full border border-outline-variant hover:bg-surface-container transition-colors py-5 sm:py-4 px-6 active:bg-surface-container transition-all">
+<span class="material-symbols-outlined" data-icon="account_balance">account_balance</span>
+<span class="font-body-md font-medium">Transferencia</span>
+</button>
+<button class="flex-1 flex items-center justify-center gap-3 p-4 rounded-full border border-outline-variant hover:bg-surface-container transition-colors py-5 sm:py-4 px-6 active:bg-surface-container transition-all">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span class="font-body-md font-medium">PayPal</span>
+</button>
+</div>
+</section>
+</div>
+<aside class="lg:col-span-5 mt-xl lg:mt-0">
+<div class="sticky top-28 bg-white p-8 rounded-3xl shadow-[0_8px_30px_rgba(194,30,86,0.06)] flex flex-col gap-md">
+<h2 class="font-headline-lg text-headline-md text-on-surface border-b border-surface-container pb-4">Resumen del Pedido</h2>
+<div class="flex flex-col gap-sm">
+<div class="flex gap-4">
+<div class="w-20 h-20 bg-surface-container-low rounded-lg overflow-hidden flex-shrink-0">
+<img alt="Product" class="w-full h-full object-cover" data-alt="close-up of premium serum bottle with minimalist gold label on cream background, soft studio lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPUUnYBLCkv6DmKju5lySLKMqoj9gBVNEWfB6Vx825Pl5izUyJLSJOOjpdAxqZvXtjGBmD2NAyMqEomwQuZGprFqbc8oHIIDYFh5-VVxespfmdSASyHfmJD-VD42Vn2YHi2u0JmUgveXPv8XWpFrLlGNn69ZY7AZZGjYqOWS6gIYn8asqKTZsvLOIJYD8cX1nl37F6NWt_MbIdvT7DKOkMXA10ZfwKxM_lNiwKPdDIHQvvkzuw9WCuArLjPjptWjVhGHAGhN8mSL0V"/>
+</div>
+<div class="flex flex-col justify-center">
+<p class="font-body-md font-medium text-on-surface">Sérum Vitamina C Pura</p>
+<p class="text-label-caps text-on-surface-variant">30ml | Cantidad: 1</p>
+<p class="font-body-md text-primary font-bold mt-1">$32.000 CLP</p>
+</div>
+</div>
+<div class="flex gap-4">
+<div class="w-20 h-20 bg-surface-container-low rounded-lg overflow-hidden flex-shrink-0">
+<img alt="Product" class="w-full h-full object-cover" data-alt="natural organic supplement capsules in a frosted glass jar, clean medical aesthetic, soft shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAbYxzr5rNkCoZ8QBwQJtbh14EJutLRPnm1ebsO_jqAq2zILsPMUCFkYwNJrsQWvfusxjNO055U7HKCenqgnnP0n3ugJdSUscQLGuz9slQ7Wp7CpXd67N0PVD121YSNJVcyhJvPEX9XDAIKHORHf-t5h2rPIhPLgcVPEoa6WGAGXkmhg8MbMjM4zDqPYSfSi1RPAcj8NkHAd-Al82P8Zy8FcYc0Y_drXCy2GuBRkTGlxq7PD2vBweFoENxYiAv-fRPIgyXP6QGtC9Gb"/>
+</div>
+<div class="flex flex-col justify-center">
+<p class="font-body-md font-medium text-on-surface">Complejo Radiance Omega-3</p>
+<p class="text-label-caps text-on-surface-variant">60 Cáps | Cantidad: 1</p>
+<p class="font-body-md text-primary font-bold mt-1">$32.000 CLP</p>
+</div>
+</div>
+</div>
+<div class="border-t border-surface-container pt-4 flex flex-col gap-2">
+<div class="flex justify-between text-body-md">
+<span class="text-on-surface-variant">Subtotal</span>
+<span class="text-on-surface font-medium">$77.000 CLP</span>
+</div>
+<div class="flex justify-between text-body-md">
+<span class="text-on-surface-variant">Envío</span>
+<span class="text-secondary font-medium">Gratis</span>
+</div>
+<div class="flex justify-between font-headline-md text-headline-md mt-2 pt-4 border-t border-surface-container">
+<span class="text-on-surface">Total</span>
+<span class="text-primary font-bold">$77.000 CLP</span>
+</div>
+</div>
+<button class="w-full py-5 bg-primary text-white rounded-full font-label-caps text-label-caps tracking-widest hover:bg-primary-container transition-all shadow-lg active:scale-[0.98]" style="background-color: #C21E56;">
+                    COMPLETAR COMPRA
+                </button>
+<div class="flex items-center justify-center gap-2 text-on-surface-variant">
+<span class="material-symbols-outlined text-sm" data-icon="lock">lock</span>
+<p class="text-[12px] font-lexend">Tus datos están protegidos y tu pago es seguro.</p>
+</div>
+</div>
+</aside>
+</main>
+<footer class="mt-xl bg-[#FDF5E6] border-t border-stone-200 pb-24">
+<div class="max-w-container-max mx-auto px-8 py-12 flex flex-col items-center gap-8 pb-24">
+<div class="flex flex-wrap justify-center gap-6">
+<a class="font-lexend text-sm text-stone-600 hover:text-rose-800 transition-colors uppercase tracking-widest" href="#">Envíos</a>
+<a class="font-lexend text-sm text-stone-600 hover:text-rose-800 transition-colors uppercase tracking-widest" href="#">Privacidad</a>
+<a class="font-lexend text-sm text-stone-600 hover:text-rose-800 transition-colors uppercase tracking-widest" href="#">Sustentabilidad</a>
+</div>
+<div class="flex flex-col items-center gap-4">
+<p class="font-lexend text-sm text-stone-600">© 2024 VITTOSTORE. Curated Wellness.</p>
+</div>
+<a class="flex items-center gap-3 px-8 py-4 bg-[#25D366] text-white rounded-full font-lexend font-medium shadow-md hover:opacity-90 transition-opacity" href="https://wa.me/something"><span class="material-symbols-outlined">chat</span> Ayuda por WhatsApp</a>
+</div>
+</footer>
+<nav class="fixed bottom-0 left-0 w-full z-50 flex md:hidden justify-around items-center px-4 pb-6 pt-3 bg-white/80 backdrop-blur-md shadow-[0_-4px_20px_rgba(194,30,86,0.08)] border-t border-rose-100/20">
+<div class="flex flex-col items-center justify-center text-stone-400">
+<span class="material-symbols-outlined" data-icon="storefront">storefront</span>
+<span class="font-lexend text-[10px] font-medium uppercase mt-1">Tienda</span>
+</div>
+<div class="flex flex-col items-center justify-center text-rose-700 scale-110">
+<span class="material-symbols-outlined" data-icon="shopping_bag" style="font-variation-settings: 'FILL' 1;">shopping_bag</span>
+<span class="font-lexend text-[10px] font-medium uppercase mt-1">Carrito</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-400">
+<span class="material-symbols-outlined" data-icon="favorite">favorite</span>
+<span class="font-lexend text-[10px] font-medium uppercase mt-1">Favoritos</span>
+</div>
+<div class="flex flex-col items-center justify-center text-stone-400">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-lexend text-[10px] font-medium uppercase mt-1">Cuenta</span>
+</div>
+</nav>
+</body></html>
+
+<!-- Carrito - VITTOSTORE -->
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Carrito de Compras - VITTOSTORE</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@100;300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#c21e56",
+                        "surface-bright": "#fff8f7",
+                        "outline": "#8d7074",
+                        "error": "#ba1a1a",
+                        "inverse-primary": "#ffb2bf",
+                        "surface": "#fff8f7",
+                        "tertiary": "#005a2f",
+                        "on-secondary-container": "#745c00",
+                        "primary-fixed-dim": "#ffb2bf",
+                        "on-secondary-fixed": "#241a00",
+                        "on-tertiary-fixed-variant": "#00522b",
+                        "inverse-surface": "#3d2c2f",
+                        "on-primary-container": "#ffdbdf",
+                        "on-error": "#ffffff",
+                        "surface-container-highest": "#f7dcdf",
+                        "secondary-fixed-dim": "#e9c349",
+                        "secondary-fixed": "#ffe088",
+                        "primary-fixed": "#ffd9de",
+                        "on-tertiary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-fixed": "#00210e",
+                        "outline-variant": "#e1bec3",
+                        "secondary": "#735c00",
+                        "on-surface": "#26181a",
+                        "surface-container": "#ffe9eb",
+                        "surface-container-low": "#fff0f1",
+                        "on-secondary": "#ffffff",
+                        "on-secondary-fixed-variant": "#574500",
+                        "tertiary-fixed-dim": "#7bda99",
+                        "tertiary-container": "#00753f",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-tint": "#b8134f",
+                        "on-error-container": "#93000a",
+                        "on-surface-variant": "#594044",
+                        "surface-container-high": "#fde2e5",
+                        "inverse-on-surface": "#ffecee",
+                        "error-container": "#ffdad6",
+                        "secondary-container": "#fed65b",
+                        "on-primary-fixed-variant": "#90003a",
+                        "tertiary-fixed": "#97f7b3",
+                        "on-tertiary-container": "#98f8b5",
+                        "primary": "#9c0040",
+                        "on-primary-fixed": "#3f0015",
+                        "background": "#fff8f7",
+                        "surface-variant": "#f7dcdf",
+                        "surface-dim": "#eed4d7",
+                        "on-background": "#26181a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-max": "1280px",
+                        "xs": "4px",
+                        "gutter": "24px",
+                        "base": "8px",
+                        "lg": "48px",
+                        "xl": "80px",
+                        "sm": "12px",
+                        "md": "24px"
+                    },
+                    "fontFamily": {
+                        "body-lg": ["Lexend"],
+                        "display-xl": ["Lexend"],
+                        "body-md": ["Lexend"],
+                        "headline-lg": ["Lexend"],
+                        "headline-md": ["Lexend"],
+                        "label-caps": ["Lexend"]
+                    },
+                    "fontSize": {
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "300"}],
+                        "display-xl": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "500"}],
+                        "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "300"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "400"}],
+                        "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #FDF5E6; /* Brand Cream Base */
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="font-body-md text-on-surface">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 bg-[#FDF5E6] shadow-[0_4px_20px_rgba(194,30,86,0.05)] border-none">
+<div class="flex justify-between items-center w-full px-6 py-4 max-w-[1280px] mx-auto">
+<div class="flex items-center gap-4">
+<button class="hover:opacity-80 transition-opacity active:scale-95 duration-150 text-[#C21E56]">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+</div>
+<h1 class="font-['Lexend'] text-2xl font-light tracking-[0.2em] text-[#C21E56]">VITTOSTORE</h1>
+<div class="flex items-center gap-4">
+<button class="hover:opacity-80 transition-opacity active:scale-95 duration-150 text-[#C21E56]">
+<span class="material-symbols-outlined" data-icon="support_agent">support_agent</span>
+</button>
+</div>
+</div>
+</header>
+<main class="pt-24 pb-32 px-6 max-w-[1280px] mx-auto min-h-screen">
+<!-- Header Section -->
+<div class="mb-12 text-center md:text-left">
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-2">Tu Selección</h2>
+<p class="font-body-md text-on-surface-variant opacity-70">Revisa tus opciones de bienestar premium antes de continuar.</p>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+<!-- Cart Items List (8 Columns) -->
+<div class="lg:col-span-8 space-y-6">
+<!-- Product Card 1 -->
+<div class="bg-white rounded-xl p-6 flex flex-col md:flex-row items-center gap-6 shadow-[0_8px_30px_rgba(194,30,86,0.03)] transition-all hover:shadow-[0_8px_40px_rgba(194,30,86,0.06)]">
+<div class="w-32 h-32 flex-shrink-0 bg-surface-container-low rounded-lg overflow-hidden">
+<img alt="Hydration Velocity Serum" class="w-full h-full object-cover" data-alt="Minimalist glass dropper bottle with clear serum on a warm cream surface with soft editorial lighting and long shadows" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBLcWalo7z1sfzNyz518utc0LfE1X-8Uy_PC76oYdWXcpNvpbf7dQLa_twVrehjcq1cfFXbauwXUJmjOYOCmhqVVZ0FU-GpRoTs0HaYWY1WQv9vvRgWIz7LpHBqjJK_RYpgGjbqHjyGEz1L9zUnvR4LSfUNIMtRVOCUcvcT-bbDcWGshUZPI8fSnjXgKlqMef7pBn0Fv_7HlakYbsDoeSiOUQuYRxBwKVAcrqXohdeQql0ChnGjfvKHrFEIAB9M5J1YEtktZ0EZXp2a"/>
+</div>
+<div class="flex-grow text-center md:text-left">
+<span class="font-label-caps text-label-caps text-secondary mb-1 block">EDICIÓN LIMITADA</span>
+<h3 class="font-headline-md text-headline-md mb-1">Hydration Velocity Serum</h3>
+<p class="font-body-md text-on-surface-variant text-sm mb-4">Revisa tus opciones de bienestar premium antes de continuar.</p>
+<div class="flex items-center justify-center md:justify-start gap-6"><div class="flex items-center border border-outline-variant rounded-full"><button class="w-12 h-12 flex items-center justify-center hover:text-primary-container transition-colors"><span class="material-symbols-outlined text-sm" data-icon="remove">remove</span></button><span class="px-2 font-medium text-sm w-8 text-center">1</span><button class="w-12 h-12 flex items-center justify-center hover:text-primary-container transition-colors"><span class="material-symbols-outlined text-sm" data-icon="add">add</span></button></div><button class="min-w-[48px] h-12 flex items-center gap-2 text-xs font-label-caps text-on-surface-variant hover:text-error transition-colors px-2"><span class="material-symbols-outlined text-xl" data-icon="delete">delete</span>ELIMINAR</button></div>
+</div>
+<div class="text-right flex flex-col items-center md:items-end gap-1">
+<p class="font-body-md text-primary-container font-semibold">$58.000 CLP</p>
+<p class="text-xs text-on-surface-variant opacity-60">Unit: $58.000 CLP</p>
+</div>
+</div>
+<!-- Product Card 2 -->
+<div class="bg-white rounded-xl p-6 flex flex-col md:flex-row items-center gap-6 shadow-[0_8px_30px_rgba(194,30,86,0.03)] transition-all hover:shadow-[0_8px_40px_rgba(194,30,86,0.06)]">
+<div class="w-32 h-32 flex-shrink-0 bg-surface-container-low rounded-lg overflow-hidden">
+<img alt="Glow Collagen Complex" class="w-full h-full object-cover" data-alt="A premium white supplement container with gold lettering, surrounded by soft pink rose petals on a light stone background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2ViDs4oQ-Nj67_EenRpD71Wj7HpD5Lv_i-ZLv3908n9egHc5LzoHGiD9qqBE3wzgVsZRV9hYwnX_LNcFeMTIf9FfrEd6y6AEGUoi7EBk0HAXwBqPSN4vrfr58DB7pl2hgXvVmXq4QbHhSE1mVdlfhiuL3aT9wOiE8wUUhVulipcJMJR2lSTtFRrQTHWA5OHS99pSwvQHX6LKPDdlsBtGkNeHSx4SwiTGEdWfsxbS3B0kM1pIdPctHf1BVK6drpmZXl6o23eljWEHS"/>
+</div>
+<div class="flex-grow text-center md:text-left">
+<span class="font-label-caps text-label-caps text-secondary mb-1 block">EDICIÓN LIMITADA</span>
+<h3 class="font-headline-md text-headline-md mb-1">Glow Collagen Complex</h3>
+<p class="font-body-md text-on-surface-variant text-sm mb-4">Revisa tus opciones de bienestar premium antes de continuar.</p>
+<div class="flex items-center justify-center md:justify-start gap-6"><div class="flex items-center border border-outline-variant rounded-full"><button class="w-12 h-12 flex items-center justify-center hover:text-primary-container transition-colors"><span class="material-symbols-outlined text-sm" data-icon="remove">remove</span></button><span class="px-2 font-medium text-sm w-8 text-center">1</span><button class="w-12 h-12 flex items-center justify-center hover:text-primary-container transition-colors"><span class="material-symbols-outlined text-sm" data-icon="add">add</span></button></div><button class="min-w-[48px] h-12 flex items-center gap-2 text-xs font-label-caps text-on-surface-variant hover:text-error transition-colors px-2"><span class="material-symbols-outlined text-xl" data-icon="delete">delete</span>ELIMINAR</button></div>
+</div>
+<div class="text-right flex flex-col items-center md:items-end gap-1">
+<p class="font-body-md text-primary-container font-semibold">$84.000 CLP</p>
+<p class="text-xs text-on-surface-variant opacity-60">Unit: $42.000 CLP</p>
+</div>
+</div>
+<!-- Continue Shopping -->
+<div class="pt-4">
+<a class="inline-flex items-center gap-2 text-primary-container font-label-caps hover:opacity-70 transition-opacity" href="#"><span class="material-symbols-outlined" data-icon="arrow_left_alt">arrow_left_alt</span> SEGUIR COMPRANDO</a>
+</div>
+</div>
+<!-- Summary Sidebar (4 Columns) -->
+<div class="lg:col-span-4 sticky top-24">
+<div class="bg-white rounded-xl p-8 shadow-[0_12px_40px_rgba(194,30,86,0.08)]">
+<h3 class="font-headline-md text-headline-md mb-6 pb-4 border-b border-surface-container">Resumen del Pedido</h3>
+<div class="space-y-4 mb-8">
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant font-body-md">Subtotal</span>
+<span class="font-medium text-on-surface">$142.000 CLP</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-on-surface-variant font-body-md">Envío Estimado</span>
+<span class="font-medium text-tertiary">$142.000 CLP</span>
+</div>
+<div class="pt-4 mt-4 border-t border-surface-container flex justify-between items-center">
+<span class="font-headline-md text-headline-md">Total</span>
+<span class="font-headline-md text-primary-container font-bold">$142.000 CLP</span>
+</div>
+</div>
+<button class="w-full py-4 bg-[#C21E56] text-white rounded-full font-label-caps tracking-widest text-sm hover:opacity-90 active:scale-[0.98] transition-all shadow-lg shadow-[#C21E56]/20 mb-6 uppercase">PROCEDER AL PAGO</button>
+<!-- Trust Messaging -->
+<div class="space-y-4 pt-4 border-t border-surface-container">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary" data-icon="verified_user">verified_user</span>
+<p class="text-xs text-on-surface-variant font-body-md">Transacciones seguras y protegidas.</p>
+</div>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-secondary" data-icon="local_shipping">local_shipping</span>
+<p class="text-xs text-on-surface-variant font-body-md">Envío premium asegurado en todas las órdenes.</p>
+</div>
+</div>
+</div>
+<!-- Promo Code -->
+<div class="mt-6 bg-white border border-outline-variant rounded-xl p-2 flex gap-2">
+<input class="bg-transparent border-none focus:ring-0 font-label-caps text-xs flex-grow placeholder:text-outline/50 h-12 px-4" placeholder="CÓDIGO DE PROMOCIÓN" type="text"/>
+<button class="text-primary-container font-label-caps text-xs px-6 hover:bg-primary-container/5 rounded-lg transition-colors">APLICAR</button>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-[#FDF5E6] border-t border-stone-200 mt-20 pb-32">
+<div class="w-full py-12 px-8 flex flex-col md:flex-row justify-between items-center gap-6 max-w-[1280px] mx-auto pb-32">
+<div class="flex flex-col items-center md:items-start gap-2">
+<span class="font-['Lexend'] font-bold text-[#C21E56]">VITTOSTORE</span>
+<p class="font-['Lexend'] text-xs font-light tracking-wide text-stone-500 uppercase">© 2024 VITTOSTORE LUXURY WELLNESS</p>
+</div>
+<div class="flex flex-wrap justify-center gap-6">
+<a class="font-['Lexend'] text-xs font-light tracking-wide text-stone-500 hover:text-amber-600 transition-colors" href="#">Shipping &amp; Returns</a>
+<a class="font-['Lexend'] text-xs font-light tracking-wide text-stone-500 hover:text-amber-600 transition-colors" href="#">WhatsApp Concierge</a>
+<a class="font-['Lexend'] text-xs font-light tracking-wide text-stone-500 hover:text-amber-600 transition-colors" href="#">Privacy</a>
+<a class="font-['Lexend'] text-xs font-light tracking-wide text-stone-500 hover:text-amber-600 transition-colors" href="#">Sustainability</a>
+</div>
+</div>
+</footer>
+<!-- BottomNavBar (Mobile only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full z-50 bg-white/80 backdrop-blur-md rounded-t-[32px] shadow-[0_-8px_30px_rgba(194,30,86,0.08)] border-t border-[#FDF5E6]">
+<div class="flex justify-around items-center px-4 pb-6 pt-3">
+<a class="flex flex-col items-center justify-center text-stone-400 hover:text-[#C21E56] transition-colors active:translate-y-[-2px]" href="#">
+<span class="material-symbols-outlined" data-icon="storefront">storefront</span>
+<span class="font-['Lexend'] text-[10px] uppercase tracking-tighter">Tienda</span>
+</a>
+<a class="flex flex-col items-center justify-center text-[#C21E56] font-bold active:translate-y-[-2px] transition-transform" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_bag" data-weight="fill" style="font-variation-settings: 'FILL' 1;">shopping_bag</span>
+<span class="font-['Lexend'] text-[10px] uppercase tracking-tighter">Carrito</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-400 hover:text-[#C21E56] transition-colors active:translate-y-[-2px]" href="#">
+<span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
+<span class="font-['Lexend'] text-[10px] uppercase tracking-tighter">Favoritos</span>
+</a>
+<a class="flex flex-col items-center justify-center text-stone-400 hover:text-[#C21E56] transition-colors active:translate-y-[-2px]" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-['Lexend'] text-[10px] uppercase tracking-tighter">Cuenta</span>
+</a>
+</div>
+</nav>
+</body></html>

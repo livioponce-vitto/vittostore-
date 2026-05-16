@@ -1,0 +1,11 @@
+{
+  "test.myshopify.com": {
+    "meta": {
+      "channel": "meta",
+      "accountId": "acc",
+      "encryptedToken": "15e000eb493f35410d57353a:90db3aab4669aa792f511024da099299:2b52f0",
+      "connectedAt": "2026-05-16T15:42:24.122Z",
+      "extra": {}
+    }
+  }
+}

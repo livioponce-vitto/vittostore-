@@ -1,0 +1,53 @@
+{
+  "jest-test-1": {
+    "id": "jest-test-1",
+    "shop": "jest-shop",
+    "email": "jest@shop.com",
+    "phone": null,
+    "totalPrice": "1000",
+    "currency": "CLP",
+    "lineItemsCount": 0,
+    "checkoutUrl": "https://shop.com/checkout",
+    "abandonedAt": "2026-04-22T16:44:58.160Z",
+    "state": "recovered",
+    "notificationsSent": [],
+    "recoveredAt": "2026-05-16T15:43:10.023Z",
+    "discountCode": null,
+    "updatedAt": "2026-05-16T15:43:10.023Z"
+  },
+  "test-cart-1": {
+    "id": "test-cart-1",
+    "shop": "unknown",
+    "email": "cliente@shop.com",
+    "phone": null,
+    "totalPrice": "1000",
+    "currency": "CLP",
+    "lineItemsCount": 0,
+    "checkoutUrl": "https://shop.com/checkout",
+    "abandonedAt": "2026-05-16T15:42:24.146Z",
+    "state": "expired",
+    "notificationsSent": [
+      {
+        "seq": 1,
+        "sentAt": "2026-04-23T16:19:02.728Z",
+        "attempts": 0,
+        "success": false,
+        "error": null,
+        "channel": "none",
+        "discountCode": null
+      },
+      {
+        "seq": 2,
+        "sentAt": "2026-05-01T04:33:59.487Z",
+        "attempts": 0,
+        "success": false,
+        "error": null,
+        "channel": "none",
+        "discountCode": "VITTOMF4CSC"
+      }
+    ],
+    "recoveredAt": null,
+    "discountCode": "VITTOMF4CSC",
+    "updatedAt": "2026-05-16T15:42:24.153Z"
+  }
+}
