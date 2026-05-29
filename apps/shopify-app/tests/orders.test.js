@@ -14,6 +14,10 @@ jest.mock('../app/routes/auth', () => ({
   })
 }));
 
+jest.mock('../app/services/oraculo', () => ({
+  syncOrder: jest.fn().mockResolvedValue({ success: true, succeeded: 1 })
+}));
+
 let mockRestClient;
 
 jest.mock('../app/services/shopify', () => ({
@@ -467,6 +471,192 @@ describe('Orders API - Unit Tests', () => {
       const res = await request(app).get('/orders');
 
       expect(res.body.ok).toBe(false);
+    });
+  });
+
+  describe('Oraculo Integration', () => {
+    it('debería sincronizar orden pagada a Oraculo al obtener con GET /:id', async () => {
+      const paidOrder = {
+        id: testOrderId,
+        email: 'customer@example.com',
+        financial_status: 'paid',
+        fulfillment_status: 'unshipped',
+        customer: {
+          id: 'cust-123',
+          email: 'customer@example.com',
+          first_name: 'John',
+          last_name: 'Doe'
+        },
+        line_items: [
+          { id: 'item-1', product_id: 'prod-1', title: 'Product', quantity: 1, price: '100' }
+        ],
+        subtotal_price: '100',
+        tax_price: '0',
+        total_price: '100',
+        updated_at: '2026-05-28T10:00:00Z'
+      };
+
+      loadSession.mockImplementation((id) => {
+        if (id === `offline_${testShop}`) {
+          return {
+            shop: testShop,
+            accessToken: testAccessToken,
+            isEncrypted: false
+          };
+        }
+        return null;
+      });
+
+      shopify.clients.Rest.mockImplementation(function(opts) {
+        this.session = opts.session;
+        this.get = jest.fn(async () => ({ body: { order: paidOrder } }));
+        mockRestClient = this;
+        return this;
+      });
+
+      const res = await request(app).get(`/orders/${testOrderId}?shop=${testShop}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.order.financial_status).toBe('paid');
+    });
+
+    it('debería no sincronizar orden sin pagar a Oraculo', async () => {
+      const unpaidOrder = {
+        id: testOrderId,
+        email: 'customer@example.com',
+        financial_status: 'pending',
+        fulfillment_status: 'unshipped',
+        customer: {
+          id: 'cust-123',
+          email: 'customer@example.com',
+          first_name: 'John',
+          last_name: 'Doe'
+        },
+        line_items: [
+          { id: 'item-1', product_id: 'prod-1', title: 'Product', quantity: 1, price: '100' }
+        ],
+        subtotal_price: '100',
+        tax_price: '0',
+        total_price: '100',
+        updated_at: '2026-05-28T10:00:00Z'
+      };
+
+      loadSession.mockImplementation((id) => {
+        if (id === `offline_${testShop}`) {
+          return {
+            shop: testShop,
+            accessToken: testAccessToken,
+            isEncrypted: false
+          };
+        }
+        return null;
+      });
+
+      shopify.clients.Rest.mockImplementation(function(opts) {
+        this.session = opts.session;
+        this.get = jest.fn(async () => ({ body: { order: unpaidOrder } }));
+        mockRestClient = this;
+        return this;
+      });
+
+      const res = await request(app).get(`/orders/${testOrderId}?shop=${testShop}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.order.financial_status).toBe('pending');
+    });
+
+    it('debería sincronizar orden pagada después de actualizar con PUT', async () => {
+      const paidOrder = {
+        id: testOrderId,
+        email: 'customer@example.com',
+        financial_status: 'paid',
+        fulfillment_status: 'unshipped',
+        customer: {
+          id: 'cust-123',
+          email: 'customer@example.com',
+          first_name: 'John',
+          last_name: 'Doe'
+        },
+        line_items: [
+          { id: 'item-1', product_id: 'prod-1', title: 'Product', quantity: 1, price: '100' }
+        ],
+        subtotal_price: '100',
+        tax_price: '0',
+        total_price: '100',
+        note: 'Updated note',
+        updated_at: '2026-05-28T10:30:00Z'
+      };
+
+      loadSession.mockImplementation((id) => {
+        if (id === `offline_${testShop}`) {
+          return {
+            shop: testShop,
+            accessToken: testAccessToken,
+            isEncrypted: false
+          };
+        }
+        return null;
+      });
+
+      shopify.clients.Rest.mockImplementation(function(opts) {
+        this.session = opts.session;
+        this.put = jest.fn(async () => ({ body: { order: paidOrder } }));
+        mockRestClient = this;
+        return this;
+      });
+
+      const res = await request(app).put(`/orders/${testOrderId}?shop=${testShop}`)
+        .send({ note: 'Updated note' });
+
+      expect(res.status).toBe(200);
+      expect(res.body.order.note).toBe('Updated note');
+      expect(res.body.order.financial_status).toBe('paid');
+    });
+
+    it('debería sincronizar orden pagada después de cerrar con POST /close', async () => {
+      const paidOrder = {
+        id: testOrderId,
+        email: 'customer@example.com',
+        financial_status: 'paid',
+        fulfillment_status: 'fulfilled',
+        customer: {
+          id: 'cust-123',
+          email: 'customer@example.com',
+          first_name: 'John',
+          last_name: 'Doe'
+        },
+        line_items: [
+          { id: 'item-1', product_id: 'prod-1', title: 'Product', quantity: 1, price: '100' }
+        ],
+        subtotal_price: '100',
+        tax_price: '0',
+        total_price: '100',
+        updated_at: '2026-05-28T10:45:00Z'
+      };
+
+      loadSession.mockImplementation((id) => {
+        if (id === `offline_${testShop}`) {
+          return {
+            shop: testShop,
+            accessToken: testAccessToken,
+            isEncrypted: false
+          };
+        }
+        return null;
+      });
+
+      shopify.clients.Rest.mockImplementation(function(opts) {
+        this.session = opts.session;
+        this.post = jest.fn(async () => ({ body: { order: paidOrder } }));
+        mockRestClient = this;
+        return this;
+      });
+
+      const res = await request(app).post(`/orders/${testOrderId}/close?shop=${testShop}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.order.fulfillment_status).toBe('fulfilled');
+      expect(res.body.order.financial_status).toBe('paid');
     });
   });
 });

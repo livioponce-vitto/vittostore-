@@ -4,6 +4,7 @@ const { loadSession } = require("../services/sessionStorage");
 const { decryptToken } = require("./auth");
 const { validate } = require("../middleware/validateBody");
 const { orderUpdateSchema, orderCloseSchema } = require("../middleware/schemas");
+const oraculo = require("../services/oraculo");
 
 const router = express.Router();
 
@@ -38,6 +39,21 @@ function buildErrorResponse(err) {
     status: 500,
     body: { ok: false, error: err.message || "Error interno" },
   };
+}
+
+// ── Helper: sincronizar orden a Oraculo si está pagada (fire-and-forget) ───────
+async function syncOrderToOraculo(order) {
+  if (!order || order.financial_status !== 'paid') {
+    return;
+  }
+
+  try {
+    const idempotencyKey = `shopify-${order.id}-${order.updated_at}`;
+    await oraculo.syncOrder(order, idempotencyKey);
+    console.info('[Oraculo] Orden sincronizada', { orderId: order.id, status: order.financial_status });
+  } catch (error) {
+    console.error('[Oraculo] Error sincronizando orden', { orderId: order.id, error: error.message });
+  }
 }
 
 /**
@@ -204,8 +220,12 @@ router.get("/:id", async (req, res) => {
     const client = getClient(shop, accessToken);
 
     const response = await client.get({ path: `orders/${id}` });
+    const order = response.body.order;
 
-    return res.json({ ok: true, order: response.body.order });
+    // Sincronizar a Oraculo si está pagada (async, no bloqueante)
+    syncOrderToOraculo(order);
+
+    return res.json({ ok: true, order });
   } catch (err) {
     console.error("[orders/:id] Error", { error: err.message, stack: err.stack, shop, id, ip: req.ip });
     const response = buildErrorResponse(err);
@@ -295,7 +315,12 @@ router.put("/:id", validate(orderUpdateSchema), async (req, res) => {
       type: "application/json",
     });
 
-    return res.json({ ok: true, order: response.body.order });
+    const order = response.body.order;
+
+    // Sincronizar a Oraculo si está pagada (async, no bloqueante)
+    syncOrderToOraculo(order);
+
+    return res.json({ ok: true, order });
   } catch (err) {
     console.error("[orders PUT] Error", { error: err.message, stack: err.stack, shop, id, ip: req.ip });
     const response = buildErrorResponse(err);
@@ -374,8 +399,12 @@ router.post("/:id/close", validate(orderCloseSchema), async (req, res) => {
     const client = getClient(shop, accessToken);
 
     const response = await client.post({ path: `orders/${id}/close`, data: {} });
+    const order = response.body.order;
 
-    return res.json({ ok: true, order: response.body.order });
+    // Sincronizar a Oraculo si está pagada (async, no bloqueante)
+    syncOrderToOraculo(order);
+
+    return res.json({ ok: true, order });
   } catch (err) {
     console.error("[orders/close] Error", { error: err.message, stack: err.stack, shop, id, ip: req.ip });
     const response = buildErrorResponse(err);
