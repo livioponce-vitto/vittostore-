@@ -2,6 +2,7 @@ const express = require("express");
 const shopify = require("../services/shopify");
 const { loadSession } = require("../services/sessionStorage");
 const { decryptToken } = require("./auth");
+const dlq = require("../services/dlq");
 
 const router = express.Router();
 
@@ -496,6 +497,292 @@ router.post("/quick-actions/orders/:id/close", async (req, res) => {
     console.error("[dashboard/order-close] Error:", err.message);
     const response = toErrorResponse(err);
     return res.status(response.status).json(response.body);
+  }
+});
+
+/**
+ * @swagger
+ * /dashboard/dlq-metrics:
+ *   get:
+ *     summary: Get Dead Letter Queue metrics for dashboard
+ *     tags: [Dashboard]
+ *     responses:
+ *       200:
+ *         description: DLQ health metrics and recent failures
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 timestamp:
+ *                   type: string
+ *                   format: date-time
+ *                 queue:
+ *                   type: object
+ *                   properties:
+ *                     total:
+ *                       type: integer
+ *                     pending:
+ *                       type: integer
+ *                     succeeded:
+ *                       type: integer
+ *                     failed:
+ *                       type: integer
+ *                 health:
+ *                   type: object
+ *                   properties:
+ *                     failureRate:
+ *                       type: number
+ *                       description: Percentage of items that failed (0-100)
+ *                     avgRetries:
+ *                       type: number
+ *                       description: Average retry attempts across all items
+ *                     status:
+ *                       type: string
+ *                       enum: [healthy, warning, critical]
+ *                 recentFailed:
+ *                   type: array
+ *                   maxItems: 5
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       orderId:
+ *                         type: string
+ *                       queueId:
+ *                         type: string
+ *                       failedAt:
+ *                         type: string
+ *                       attempts:
+ *                         type: integer
+ *                       lastError:
+ *                         type: string
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.get("/dlq-metrics", (req, res) => {
+  try {
+    const stats = dlq.getStats();
+    const failed = dlq.getFailedItems();
+
+    const failureRate = stats.total > 0 ? ((stats.failed / stats.total) * 100).toFixed(2) : 0;
+
+    let avgRetries = 0;
+    if (stats.total > 0) {
+      const totalRetries = stats.items.reduce((sum, item) => sum + (item.retries || 0), 0);
+      avgRetries = (totalRetries / stats.total).toFixed(2);
+    }
+
+    let queueStatus = "healthy";
+    if (failureRate > 50) queueStatus = "critical";
+    else if (failureRate > 20) queueStatus = "warning";
+
+    const recentFailed = failed.slice(0, 5).map((item) => ({
+      orderId: item.orderId,
+      queueId: item.queueId,
+      failedAt: item.failedAt,
+      attempts: item.attempts.length,
+      lastError: item.attempts[item.attempts.length - 1]?.error || "Unknown",
+    }));
+
+    res.json({
+      ok: true,
+      timestamp: new Date().toISOString(),
+      queue: {
+        total: stats.total,
+        pending: stats.pending,
+        succeeded: stats.succeeded,
+        failed: stats.failed,
+      },
+      health: {
+        failureRate: Number(failureRate),
+        avgRetries: Number(avgRetries),
+        status: queueStatus,
+      },
+      recentFailed,
+    });
+  } catch (error) {
+    console.error("[dashboard/dlq-metrics] Error:", error.message);
+    res.status(500).json({
+      ok: false,
+      error: error.message,
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+/**
+ * @swagger
+ * /dlq/retry/{queueId}:
+ *   post:
+ *     summary: Manually retry a failed queue item
+ *     tags: [DLQ]
+ *     parameters:
+ *       - in: path
+ *         name: queueId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: DLQ queue item ID
+ *     responses:
+ *       200:
+ *         description: Item reset for retry
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 queueId:
+ *                   type: string
+ *                 orderId:
+ *                   type: string
+ *                 nextRetryAt:
+ *                   type: string
+ *       404:
+ *         description: Queue item not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.post("/dlq/retry/:queueId", (req, res) => {
+  const { queueId } = req.params;
+
+  try {
+    const item = dlq.resetItemForRetry(queueId);
+    res.json({
+      ok: true,
+      queueId: item.queueId,
+      orderId: item.orderId,
+      nextRetryAt: item.nextRetryAt,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error("[dlq/retry] Error:", error.message);
+    if (error.code === "QUEUE_ITEM_NOT_FOUND") {
+      return res.status(404).json({
+        ok: false,
+        error: error.message,
+        timestamp: new Date().toISOString(),
+      });
+    }
+    res.status(500).json({
+      ok: false,
+      error: error.message,
+      timestamp: new Date().toISOString(),
+    });
+  }
+});
+
+/**
+ * @swagger
+ * /dlq/batch-retry:
+ *   post:
+ *     summary: Manually retry multiple failed queue items
+ *     tags: [DLQ]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               queueIds:
+ *                 type: array
+ *                 items:
+ *                   type: string
+ *                 description: Array of queueIds to retry
+ *               retryAll:
+ *                 type: boolean
+ *                 description: If true, retries all failed items (ignores queueIds)
+ *     responses:
+ *       200:
+ *         description: Batch retry results
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ok:
+ *                   type: boolean
+ *                 successful:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 failed:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 summary:
+ *                   type: object
+ *                   properties:
+ *                     total:
+ *                       type: integer
+ *                     succeeded:
+ *                       type: integer
+ *                     failed:
+ *                       type: integer
+ *       400:
+ *         description: Invalid request
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
+router.post("/dlq/batch-retry", (req, res) => {
+  const { queueIds = [], retryAll } = req.body || {};
+
+  try {
+    let itemsToRetry = queueIds;
+
+    if (retryAll) {
+      const failedItems = dlq.getFailedItems();
+      itemsToRetry = failedItems.map(item => item.queueId);
+    }
+
+    if (!retryAll && (!Array.isArray(queueIds) || queueIds.length === 0)) {
+      return res.status(400).json({
+        ok: false,
+        error: "queueIds array is required and must not be empty, or set retryAll to true",
+        timestamp: new Date().toISOString(),
+      });
+    }
+
+    const results = dlq.batchResetItemsForRetry(itemsToRetry);
+
+    res.json({
+      ok: true,
+      successful: results.successful,
+      failed: results.failed,
+      summary: results.summary,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error("[dlq/batch-retry] Error:", error.message);
+    res.status(500).json({
+      ok: false,
+      error: error.message,
+      timestamp: new Date().toISOString(),
+    });
   }
 });
 

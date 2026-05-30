@@ -1,0 +1,258 @@
+// This file is governed by engineering-data/SKILL.md
+// All models include immutability, audit, and referential integrity constraints
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id                String   @id @default(cuid())
+  email             String   @unique
+  emailEncrypted    Boolean  @default(true) // PII encryption marker
+  phone             String?
+  phoneEncrypted    Boolean  @default(true) // PII encryption marker
+  name              String
+  merchantId        String
+  role              String   @default("VIEWER") // ADMIN, ACCOUNTANT, VIEWER
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  merchant          Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  orders            Order[]
+  auditLogs         AuditLog[]
+
+  @@index([merchantId])
+  @@index([email])
+}
+
+model Merchant {
+  id                String   @id @default(cuid())
+  name              String
+  rut               String   @unique
+  rutEncrypted      Boolean  @default(true) // PII encryption marker
+  razonSocial       String
+  giro              String
+  address           String
+  addressEncrypted  Boolean  @default(true)
+  city              String
+  region            String
+  siiStatus         String   @default("PENDING") // PENDING, ACTIVE, SUSPENDED
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  users             User[]
+  orders            Order[]
+  facturas          Factura[]
+  boletas           Boleta[]
+  settlements       Settlement[]
+  syncLogs          SyncLog[]
+
+  @@unique([rut, razonSocial]) // Prevent duplicate registrations
+  @@index([siiStatus])
+}
+
+model Order {
+  id                String   @id @default(cuid())
+  shopifyOrderId    String   @unique
+  merchantId        String
+  userId            String
+  customerId        String
+  customerName      String
+  customerEmail     String   @db.VarChar(255)
+  customerEmailEnc  Boolean  @default(true) // PII encryption marker
+  totalAmount       Decimal  @db.Decimal(10, 2)
+  status            String   @default("PENDING") // PENDING, PROCESSING, PAID, FAILED, REFUNDED
+  paymentMethod     String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  processedAt       DateTime?
+
+  merchant          Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  user              User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+  payments          Payment[]
+  factura           Factura?
+  auditLogs         AuditLog[] @relation("AuditLogOrder")
+  dlqEvents         DLQEvent[]
+
+  @@unique([shopifyOrderId, merchantId])
+  @@index([merchantId])
+  @@index([userId])
+  @@index([status])
+  @@index([customerId])
+}
+
+model Payment {
+  id                String   @id @default(cuid())
+  orderId           String
+  merchantId        String
+  amount            Decimal  @db.Decimal(10, 2)
+  currency          String   @default("CLP")
+  cardToken         String   // Banco Chile tokenized, never plaintext
+  cardLast4         String   @db.Char(4)
+  transactionId     String   @unique
+  status            String   @default("PENDING") // PENDING, APPROVED, DECLINED, FAILED
+  errorCode         String?
+  errorMessage      String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  processedAt       DateTime?
+
+  order             Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  auditLogs         AuditLog[] @relation("AuditLogPayment")
+
+  @@unique([transactionId, merchantId]) // Idempotency key
+  @@index([orderId])
+  @@index([status])
+}
+
+model Factura {
+  id                String   @id @default(cuid())
+  folio             BigInt   @unique // SII folio sequential control
+  orderId           String   @unique
+  merchantId        String
+  razonSocial       String
+  rut               String   @db.Char(12)
+  totalAmount       Decimal  @db.Decimal(10, 2)
+  status            String   @default("DRAFT") // DRAFT, SUBMITTED, SIGNED, VOIDED
+  siiResponseCode   String?
+  siiTrackingId     String?   @unique
+  xmlContent        String?   @db.Text
+  signatureStatus   String   @default("UNSIGNED") // UNSIGNED, SIGNED
+  voidedAt          DateTime?
+  voidReason        String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  order             Order    @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  merchant          Merchant @relation(fields: [merchantId], references: [id], onDelete: Restrict)
+  libroMayor        LibroMayor?
+  auditLogs         AuditLog[] @relation("AuditLogFactura")
+
+  // DB CONSTRAINT: immutable after SIGNED
+  @@index([merchantId])
+  @@index([status])
+}
+
+model Boleta {
+  id                String   @id @default(cuid())
+  orderId           String   @unique
+  merchantId        String
+  razonSocial       String
+  rut               String   @db.Char(12)
+  totalAmount       Decimal  @db.Decimal(10, 2)
+  status            String   @default("ACTIVE") // ACTIVE, VOIDED, ARCHIVED
+  voidedAt          DateTime?
+  voidReason        String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  merchant          Merchant @relation(fields: [merchantId], references: [id], onDelete: Restrict)
+
+  @@unique([merchantId, orderId])
+}
+
+model Settlement {
+  id                String   @id @default(cuid())
+  merchantId        String
+  period            String   // YYYY-MM format (e.g. "2025-05")
+  totalRevenue      Decimal  @db.Decimal(10, 2)
+  totalTaxes        Decimal  @db.Decimal(10, 2)
+  netAmount         Decimal  @db.Decimal(10, 2)
+  status            String   @default("PENDING") // PENDING, SUBMITTED, APPROVED, PAID
+  bankTransferId    String?  @unique
+  approvedAt        DateTime?
+  paidAt            DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  merchant          Merchant @relation(fields: [merchantId], references: [id], onDelete: Restrict)
+
+  @@unique([merchantId, period])
+  @@index([status])
+}
+
+model LibroMayor {
+  id                String   @id @default(cuid())
+  facturaId         String   @unique
+  account           String   @db.Char(6) // SII account codes
+  debit             Decimal? @db.Decimal(10, 2)
+  credit            Decimal? @db.Decimal(10, 2)
+  concept           String
+  createdAt         DateTime @default(now())
+
+  factura           Factura  @relation(fields: [facturaId], references: [id], onDelete: Cascade)
+
+  @@index([account])
+}
+
+model AuditLog {
+  id                String   @id @default(cuid())
+  action            String   // CREATE, UPDATE, DELETE, SUBMIT, SIGN, VOID
+  entity            String   // USER, ORDER, PAYMENT, FACTURA, BOLETA, SETTLEMENT
+  entityId          String
+  merchantId        String?
+  userId            String?
+  oldValues         Json?    // Previous state before mutation
+  newValues         Json?    // New state after mutation
+  changes           String?  // Human-readable change description
+  ipAddress         String?
+  userAgent         String?  // Anonymized for privacy
+  createdAt         DateTime @default(now())
+
+  user              User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  order             Order?   @relation("AuditLogOrder", fields: [entityId], references: [id], onDelete: Cascade, map: "AuditLog_orderId_fkey")
+  payment           Payment? @relation("AuditLogPayment", fields: [entityId], references: [id], onDelete: Cascade, map: "AuditLog_paymentId_fkey")
+  factura           Factura? @relation("AuditLogFactura", fields: [entityId], references: [id], onDelete: Cascade, map: "AuditLog_facturaId_fkey")
+
+  // 30-year retention: 7 years hot (this table), 8-30 years cold (AuditLogArchive)
+  @@index([entityId])
+  @@index([entity])
+  @@index([merchantId])
+  @@index([createdAt])
+}
+
+model SyncLog {
+  id                String   @id @default(cuid())
+  merchantId        String
+  syncType          String   // SHOPIFY_ORDERS, ORACULO_SYNC, SII_SUBMISSION
+  status            String   @default("STARTED") // STARTED, SUCCESS, FAILED, PARTIAL
+  recordsProcessed  Int      @default(0)
+  recordsFailed     Int      @default(0)
+  errorMessage      String?
+  payload           Json?    // Raw request/response for debugging
+  startedAt         DateTime @default(now())
+  completedAt       DateTime?
+
+  merchant          Merchant @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+
+  @@index([merchantId])
+  @@index([syncType])
+  @@index([status])
+}
+
+model DLQEvent {
+  id                String   @id @default(cuid())
+  orderId           String
+  merchantId        String
+  eventType         String   // WEBHOOK_FAILED, ORACULO_FAILED, SII_SUBMISSION_FAILED
+  errorCode         String
+  errorMessage      String   @db.Text
+  retryCount        Int      @default(0)
+  maxRetries        Int      @default(5)
+  status            String   @default("PENDING") // PENDING, PROCESSING, RESOLVED, FAILED
+  failedAt          DateTime?
+  resolvedAt        DateTime?
+  createdAt         DateTime @default(now())
+  nextRetryAt       DateTime?
+
+  order             Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([status])
+  @@index([nextRetryAt])
+}

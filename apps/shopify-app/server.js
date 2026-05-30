@@ -137,6 +137,7 @@ const campaignRoutes = require("./app/routes/campaigns");
 const channelRoutes = require("./app/routes/channels");
 const cartRecoveryRoutes = require("./app/routes/cartRecovery");
 const adaptiveBotDemoRoutes = require("./app/routes/adaptiveBotDemo");
+const dlqRoutes = require("./app/routes/dlq");
 const cartRecovery = require("./app/services/cartRecovery");
 
 // Swagger UI — disabled in test env
@@ -156,6 +157,7 @@ app.use("/campaigns", campaignRoutes);
 app.use("/channels", channelRoutes);
 app.use("/cart-recovery", cartRecoveryRoutes);
 app.use("/api", adaptiveBotDemoRoutes);
+app.use("/dlq", dlqRoutes);
 
 /**
  * @swagger
@@ -186,6 +188,10 @@ app.use("/api", adaptiveBotDemoRoutes);
  */
 // Sincronización Shopify bajo demanda
 const { syncAll } = require('./app/jobs/syncShopify');
+
+// DLQ Retry job - started automatically
+require('./app/jobs/dlqRetryCron');
+
 app.post('/shopify/sync', (req, res) => {
   const token = req.headers['x-sync-token'];
   if (!token || token !== process.env.SYNC_SECRET_TOKEN) {

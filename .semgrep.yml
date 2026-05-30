@@ -1,0 +1,140 @@
+rules:
+  - id: banco-chile-card-stored-plaintext
+    pattern-either:
+      - patterns:
+          - pattern-inside: |
+              $CARDOBJ = {...}
+          - pattern: $CARDOBJ.cardNumber = $VALUE
+          - metavariable-pattern:
+              metavariable: $VALUE
+              patterns:
+                - pattern-not: '"token_..."'
+                - pattern-not: 'vault.encrypt(...)'
+      - patterns:
+          - pattern-inside: |
+              db.$MODEL.create({...})
+          - pattern: cardNumber: $VALUE
+          - metavariable-pattern:
+              metavariable: $VALUE
+              patterns:
+                - pattern-not: '"token_..."'
+                - pattern-not: 'vault.encrypt(...)'
+    message: "Banco Chile integration: card numbers must be tokenized (token_*), never stored plaintext"
+    languages:
+      - typescript
+      - javascript
+    severity: CRITICAL
+    fix: "Use Banco Chile API: const token = await bancoChile.tokenizeCard(card)"
+
+  - id: webhook-no-hmac-verification
+    patterns:
+      - pattern-either:
+          - patterns:
+              - pattern-inside: |
+                  app.post('/webhook/...',(req, res) => {...})
+              - pattern-not-inside: |
+                  const verified = validateWebhookSignature(req.headers, req.body)
+                  if (!verified) { $X }
+          - patterns:
+              - pattern: |
+                  const signature = req.headers['x-webhook-signature']
+              - pattern-not-inside: |
+                  const isValid = crypto.timingSafeEqual(...)
+    message: "Webhook: all incoming webhooks must validate HMAC-SHA256 signature with validateWebhookSignature()"
+    languages:
+      - typescript
+      - javascript
+    severity: CRITICAL
+    fix: "Add: if (!validateWebhookSignature(req.headers, req.body)) return res.status(401).json({error: 'Invalid signature'})"
+
+  - id: factura-update-after-signed
+    patterns:
+      - pattern-either:
+          - patterns:
+              - pattern-inside: |
+                  db.factura.update({...})
+              - pattern-before-inside: |
+                  $FACTURA.status === 'SIGNED' || $FACTURA.status === 'VOIDED'
+          - patterns:
+              - pattern: |
+                  UPDATE factura SET $COLUMN = $VALUE WHERE folio = $FOLIO
+              - pattern-before-inside: |
+                  WHERE status = 'SIGNED' OR status = 'VOIDED'
+    message: "Compliance: Factura is immutable after SII submission (status=SIGNED). Cannot update. Must void instead."
+    languages:
+      - typescript
+      - javascript
+      - sql
+    severity: CRITICAL
+    fix: "Use void workflow: await facturService.voidFactura(folio) with proper AuditLog"
+
+  - id: factura-change-without-audit-log
+    patterns:
+      - pattern-either:
+          - patterns:
+              - pattern-inside: |
+                  db.$MODEL.update({...})
+              - pattern-not-inside: |
+                  auditService.log({
+                    action: $ACTION,
+                    entity: $ENTITY,
+                    changes: {...}
+                  })
+          - patterns:
+              - pattern: |
+                  db.factura.update({...})
+              - pattern-not-inside: |
+                  auditService.log({...})
+          - patterns:
+              - pattern: |
+                  db.payment.update({...})
+              - pattern-not-inside: |
+                  auditService.log({...})
+    message: "Compliance: all mutations to financial entities (Factura, Payment, Settlement) must create AuditLog entries"
+    languages:
+      - typescript
+      - javascript
+    severity: HIGH
+    fix: "Wrap update with: await auditService.log({action: 'UPDATE', entity: 'FACTURA', old: $OLD, new: $NEW})"
+
+  - id: pii-in-logs-email
+    patterns:
+      - pattern-either:
+          - pattern: |
+              console.log(...$EMAIL...)
+          - pattern: |
+              logger.info(...$EMAIL...)
+          - pattern: |
+              logger.debug(...$EMAIL...)
+    metavariable-pattern:
+      metavariable: $EMAIL
+      patterns:
+        - pattern-regex: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+    message: "Security: customer email (PII) logged directly. Use redact() before logging."
+    languages:
+      - typescript
+      - javascript
+    severity: HIGH
+    fix: "Use: logger.info('Customer:', {email: redact(customer.email)})"
+
+  - id: customer-pii-not-encrypted
+    patterns:
+      - pattern-either:
+          - patterns:
+              - pattern-inside: |
+                  db.user.create({...})
+              - pattern: email: $EMAIL
+              - pattern-not-inside: |
+                  email: vault.encrypt($EMAIL)
+          - patterns:
+              - pattern-inside: |
+                  db.user.create({...})
+              - pattern: phone: $PHONE
+              - pattern-not-inside: |
+                  phone: vault.encrypt($PHONE)
+    message: "Security: customer PII (email, phone) must be encrypted at rest using vault.encrypt()"
+    languages:
+      - typescript
+      - javascript
+    severity: CRITICAL
+    fix: "Use: email: await vault.encrypt(customer.email), phone: await vault.encrypt(customer.phone)"

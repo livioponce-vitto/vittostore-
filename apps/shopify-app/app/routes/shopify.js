@@ -1,5 +1,7 @@
 const express = require("express");
 const verifyWebhook = require("../middleware/verifyWebhook");
+const oraculo = require("../services/oraculo");
+const dlq = require("../services/dlq");
 const router = express.Router();
 
 /**
@@ -44,14 +46,35 @@ router.post("/webhooks/orders/paid", express.raw({ type: "*/*" }), verifyWebhook
     return res.status(400).json({ ok: false, error: "shop header requerido" });
   }
   try {
-    const payload = JSON.parse(req.body.toString());
-    console.info(`[webhook] orders/paid from ${shop}`, { orderId: payload.id });
+    const order = JSON.parse(req.body.toString());
+    console.info(`[webhook] orders/paid from ${shop}`, { orderId: order.id });
+
+    // Sincronizar a Oraculo si está pagada (async, no bloqueante)
+    syncOrderToOraculoAsync(order);
+
     res.status(200).send("ok");
   } catch (err) {
     console.error("[Shopify] orders/paid: error procesando payload", { error: err.message, stack: err.stack, shop, ip: req.ip });
     res.status(400).json({ ok: false, error: "Payload inválido" });
   }
 });
+
+// Helper: sincronizar orden a Oraculo de forma asincrónica (fire-and-forget)
+async function syncOrderToOraculoAsync(order) {
+  if (!order || order.financial_status !== 'paid') {
+    return;
+  }
+
+  try {
+    const idempotencyKey = `shopify-${order.id}-${order.updated_at}`;
+    await oraculo.syncOrder(order, idempotencyKey);
+    console.info('[Oraculo] Orden sincronizada desde webhook', { orderId: order.id, status: order.financial_status });
+  } catch (error) {
+    console.error('[Oraculo] Error sincronizando orden desde webhook', { orderId: order.id, error: error.message });
+    const idempotencyKey = `shopify-${order.id}-${order.updated_at}`;
+    dlq.enqueue(order, idempotencyKey, error);
+  }
+}
 
 /**
  * @swagger

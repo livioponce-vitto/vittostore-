@@ -1,0 +1,46 @@
+{
+  "queueId": "dlq-1780035339929-e6zpse87y",
+  "orderId": "8001",
+  "idempotencyKey": "shopify-8001-2026-05-29T10:00:00Z",
+  "order": {
+    "id": "8001",
+    "financial_status": "paid",
+    "updated_at": "2026-05-29T10:00:00Z"
+  },
+  "error": "Error",
+  "errorStack": "Error: Error\n    at Object.<anonymous> (D:\\vittostore\\apps\\shopify-app\\tests\\dlq-batch-retry.test.js:325:43)\n    at Promise.then.completed (D:\\vittostore\\apps\\shopify-app\\node_modules\\jest-circus\\build\\utils.js:298:28)\n    at new Promise (<anonymous>)\n    at callAsyncCircusFn (D:\\vittostore\\apps\\shopify-app\\node_modules\\jest-circus\\build\\utils.js:231:10)\n    at _callCircusTest (D:\\vittostore\\apps\\shopify-app\\node_modules\\jest-circus\\build\\run.js:316:40)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at _runTest (D:\\vittostore\\apps\\shopify-app\\node_modules\\jest-circus\\build\\run.js:252:3)\n    at _runTestsForDescribeBlock (D:\\vittostore\\apps\\shopify-app\\node_modules\\jest-circus\\build\\run.js:126:9)\n    at _runTestsForDescribeBlock (D:\\vittostore\\apps\\shopify-app\\node_modules\\jest-circus\\build\\run.js:121:9)\n    at _runTestsForDescribeBlock (D:\\vittostore\\apps\\shopify-app\\node_modules\\jest-circus\\build\\run.js:121:9)\n    at run (D:\\vittostore\\apps\\shopify-app\\node_modules\\jest-circus\\build\\run.js:71:3)\n    at runAndTransformResultsToJestFormat (D:\\vittostore\\apps\\shopify-app\\node_modules\\jest-circus\\build\\legacy-code-todo-rewrite\\jestAdapterInit.js:122:21)\n    at jestAdapter (D:\\vittostore\\apps\\shopify-app\\node_modules\\jest-circus\\build\\legacy-code-todo-rewrite\\jestAdapter.js:79:19)\n    at runTestInternal (D:\\vittostore\\apps\\shopify-app\\node_modules\\jest-runner\\build\\runTest.js:367:16)\n    at runTest (D:\\vittostore\\apps\\shopify-app\\node_modules\\jest-runner\\build\\runTest.js:444:34)",
+  "retries": 3,
+  "maxRetries": 3,
+  "enqueuedAt": "2026-05-29T06:15:39.929Z",
+  "nextRetryAt": "2026-05-29T06:20:15.040Z",
+  "attempts": [
+    {
+      "timestamp": "2026-05-29T06:15:39.929Z",
+      "error": "Error"
+    },
+    {
+      "timestamp": "2026-05-29T06:15:45.029Z",
+      "error": "Error"
+    },
+    {
+      "timestamp": "2026-05-29T06:15:55.029Z",
+      "error": "Error"
+    },
+    {
+      "timestamp": "2026-05-29T06:16:10.029Z",
+      "error": "Error"
+    },
+    {
+      "timestamp": "2026-05-29T06:20:00.030Z",
+      "error": "Error"
+    },
+    {
+      "timestamp": "2026-05-29T06:20:00.040Z",
+      "error": "Error"
+    },
+    {
+      "timestamp": "2026-05-29T06:25:00.036Z",
+      "error": "Error"
+    }
+  ]
+}

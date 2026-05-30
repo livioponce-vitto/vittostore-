@@ -1,0 +1,64 @@
+#!/bin/bash
+set -e
+
+echo "🔐 Stage 1/7: Vault Secrets Check"
+if [ -n "$VAULT_ADDR" ]; then
+  if ! command -v vault &> /dev/null; then
+    echo "⚠️  Vault CLI not found. Skipping Vault check in dev environment."
+  else
+    vault status > /dev/null 2>&1 || {
+      echo "❌ Vault unreachable at $VAULT_ADDR"
+      exit 1
+    }
+  fi
+fi
+
+echo "🔍 Stage 2/7: Semgrep SAST Analysis"
+if ! command -v semgrep &> /dev/null; then
+  echo "⚠️  Semgrep not installed. Install with: pip install semgrep"
+  exit 1
+fi
+semgrep --config=.semgrep.yml --error --quiet . || {
+  echo "❌ Semgrep found security violations"
+  exit 1
+}
+
+echo "🐳 Stage 3/7: Trivy Vulnerability Scan"
+if ! command -v trivy &> /dev/null; then
+  echo "⚠️  Trivy not installed. Install from: https://github.com/aquasecurity/trivy"
+  exit 1
+fi
+trivy fs --exit-code 1 --severity CRITICAL,HIGH package.json package-lock.json 2>/dev/null || {
+  echo "❌ Trivy detected critical/high vulnerabilities"
+  exit 1
+}
+
+echo "📘 Stage 4/7: TypeScript Type Check"
+if ! npm run type-check > /dev/null 2>&1; then
+  echo "❌ TypeScript compilation failed"
+  npm run type-check
+  exit 1
+fi
+
+echo "📝 Stage 5/7: ESLint Code Quality"
+if ! npx eslint . --ext .ts,.tsx,.js,.jsx --max-warnings 0 > /dev/null 2>&1; then
+  echo "❌ ESLint found violations (--max-warnings 0)"
+  npx eslint . --ext .ts,.tsx,.js,.jsx --max-warnings 0
+  exit 1
+fi
+
+echo "✨ Stage 6/7: Prettier Format Check"
+if ! npx prettier --check . > /dev/null 2>&1; then
+  echo "❌ Prettier format violations detected"
+  npx prettier --check .
+  exit 1
+fi
+
+echo "🧪 Stage 7/7: Jest Unit Tests (85% Coverage)"
+if ! npm test -- --coverage --coverageThreshold='{"global":{"branches":85,"functions":85,"lines":85,"statements":85}}' > /dev/null 2>&1; then
+  echo "❌ Jest tests failed or coverage below 85%"
+  npm test -- --coverage --coverageThreshold='{"global":{"branches":85,"functions":85,"lines":85,"statements":85}}'
+  exit 1
+fi
+
+echo "✅ All 7 gates passed. Commit allowed."
