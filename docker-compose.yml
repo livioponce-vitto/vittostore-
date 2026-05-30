@@ -1,0 +1,75 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: vittostore-db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-vittostore}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - vitto-net
+
+  redis:
+    image: redis:7-alpine
+    container_name: vittostore-redis
+    volumes:
+      - redisdata:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - vitto-net
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: vittostore-app
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      PORT: 3000
+      DB_URL: ${DB_URL:-postgresql://postgres:postgres@postgres:5432/vittostore}
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379}
+      BANCO_CHILE_API_URL: ${BANCO_CHILE_API_URL}
+      BANCO_CHILE_API_KEY: ${BANCO_CHILE_API_KEY}
+      BANCO_CHILE_RUT: ${BANCO_CHILE_RUT}
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./dist:/app/dist:ro
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/health', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    networks:
+      - vitto-net
+
+volumes:
+  pgdata:
+  redisdata:
+
+networks:
+  vitto-net:
+    driver: bridge
