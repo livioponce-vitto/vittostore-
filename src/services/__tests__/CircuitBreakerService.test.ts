@@ -242,45 +242,39 @@ describe('CircuitBreakerService', () => {
 
   describe('Timeout Handling', () => {
     it('should enforce timeout on API calls', async () => {
-      jest.useRealTimers();
-      try {
-        const slowFn = jest.fn(
-          () =>
-            new Promise((resolve) => {
-              setTimeout(() => resolve({ data: 'slow' }), 10000);
-            })
-        );
-
-        await expect(
-          CircuitBreakerService.execute('TestAPI', slowFn, {
-            timeout: 1000,
+      const slowFn = jest.fn(
+        () =>
+          new Promise((resolve) => {
+            setTimeout(() => resolve({ data: 'slow' }), 10000);
           })
-        ).rejects.toThrow(/Timeout after 1000ms/);
-      } finally {
-        jest.useFakeTimers();
-      }
+      );
+
+      const executePromise = CircuitBreakerService.execute('TestAPI', slowFn, {
+        timeout: 1000,
+      });
+
+      jest.advanceTimersByTime(1000);
+
+      await expect(executePromise).rejects.toThrow(/Timeout after 1000ms/);
     });
 
     it('should record timeout as failure metric', async () => {
-      jest.useRealTimers();
-      try {
-        const slowFn = jest.fn(
-          () =>
-            new Promise((resolve) => {
-              setTimeout(() => resolve({ data: 'slow' }), 10000);
-            })
-        );
-
-        await expect(
-          CircuitBreakerService.execute('TestAPI', slowFn, {
-            timeout: 1000,
+      const slowFn = jest.fn(
+        () =>
+          new Promise((resolve) => {
+            setTimeout(() => resolve({ data: 'slow' }), 10000);
           })
-        ).rejects.toThrow();
+      );
 
-        expect(prisma.aPIHealthMetric.create).not.toHaveBeenCalled();
-      } finally {
-        jest.useFakeTimers();
-      }
+      const executePromise = CircuitBreakerService.execute('TestAPI', slowFn, {
+        timeout: 1000,
+      });
+
+      jest.advanceTimersByTime(1000);
+
+      await expect(executePromise).rejects.toThrow();
+
+      expect(prisma.aPIHealthMetric.create).not.toHaveBeenCalled();
     });
   });
 

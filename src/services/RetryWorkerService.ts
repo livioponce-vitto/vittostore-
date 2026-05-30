@@ -35,7 +35,9 @@ export class RetryWorkerService {
       } catch (error) {
         Logger.error('RetryWorker poll cycle failed', error as Error);
       } finally {
-        this.pollTimeout = setTimeout(poll, finalConfig.pollIntervalMs);
+        if (this.isRunning) {
+          this.pollTimeout = setTimeout(poll, finalConfig.pollIntervalMs);
+        }
       }
     };
 
@@ -43,11 +45,11 @@ export class RetryWorkerService {
   }
 
   static stop(): void {
+    this.isRunning = false;
     if (this.pollTimeout) {
       clearTimeout(this.pollTimeout);
       this.pollTimeout = null;
     }
-    this.isRunning = false;
     Logger.info('RetryWorker stopped');
   }
 
