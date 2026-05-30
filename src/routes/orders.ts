@@ -21,12 +21,30 @@ router.post('/webhook/orders/paid', validateWebhookSignature, async (req: Webhoo
 
     Logger.info(`Webhook received: order ${order_id} paid`);
 
+    // Lookup merchant and first user for this merchant
+    const merchant = await prisma.merchant.findUnique({
+      where: { id: merchantId },
+    });
+
+    if (!merchant) {
+      return res.status(404).json({ error: 'Merchant not found' });
+    }
+
+    const user = await prisma.user.findFirst({
+      where: { merchantId },
+      orderBy: { createdAt: 'asc' },
+    });
+
+    if (!user) {
+      return res.status(400).json({ error: 'No user found for merchant' });
+    }
+
     // 1. Create Order in DB
     const order = await prisma.order.create({
       data: {
         shopifyOrderId: order_id,
         merchantId,
-        userId: 'system-webhook', // TODO: map to actual user
+        userId: user.id,
         customerId: customer.id,
         customerName: customer.first_name,
         customerEmail: VaultService.encrypt(customer.email),
@@ -36,7 +54,7 @@ router.post('/webhook/orders/paid', validateWebhookSignature, async (req: Webhoo
     });
 
     // 2. Log order creation
-    await AuditService.logOrderCreated(order.id, merchantId, 'system-webhook', req.body, {
+    await AuditService.logOrderCreated(order.id, merchantId, user.id, req.body, {
       ipAddress: req.ip,
     });
 
@@ -44,10 +62,10 @@ router.post('/webhook/orders/paid', validateWebhookSignature, async (req: Webhoo
     const factura = await FacturaService.createFactura({
       orderId: order.id,
       merchantId,
-      razonSocial: req.body.shop?.name || 'Merchant',
-      rut: req.body.merchant_rut || '00000000-0', // TODO: lookup from merchant
+      razonSocial: req.body.shop?.name || merchant.razonSocial,
+      rut: merchant.rut,
       totalAmount: parseFloat(total_price),
-      userId: 'system-webhook',
+      userId: user.id,
       ipAddress: req.ip,
     });
 

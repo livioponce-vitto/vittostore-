@@ -8,7 +8,22 @@ import { Logger } from '../services/Logger';
 import request from 'supertest';
 import express, { Express } from 'express';
 
-jest.mock('../db');
+jest.mock('../db', () => ({
+  prisma: {
+    merchant: {
+      findUnique: jest.fn(),
+    },
+    user: {
+      findFirst: jest.fn(),
+    },
+    order: {
+      create: jest.fn(),
+      update: jest.fn(),
+      findUnique: jest.fn(),
+      findMany: jest.fn(),
+    },
+  },
+}));
 jest.mock('../services/PaymentService');
 jest.mock('../services/FacturaService');
 jest.mock('../services/AuditService');
@@ -36,6 +51,16 @@ beforeAll(() => {
 describe('Orders Router', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    (prisma.merchant.findUnique as jest.Mock).mockResolvedValue({
+      id: 'mer_1',
+      rut: '12345678-K',
+      razonSocial: 'Test Merchant',
+    });
+    (prisma.user.findFirst as jest.Mock).mockResolvedValue({
+      id: 'usr_1',
+      merchantId: 'mer_1',
+      createdAt: new Date(),
+    });
   });
 
   describe('POST /webhook/orders/paid', () => {
