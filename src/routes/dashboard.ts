@@ -2,6 +2,7 @@ import { Router, Response } from 'express';
 import { prisma } from '../db';
 import { Logger } from '../services/Logger';
 import { requireAccounting, WebhookRequest } from '../middleware/governance';
+import { getAPIHealth } from './circuitBreaker';
 
 const router = Router();
 
@@ -274,6 +275,15 @@ router.get('/dlq/failed', requireAccounting, async (req: WebhookRequest, res: Re
     Logger.error('Failed to retrieve failed events', error as Error);
     res.status(500).json({ error: (error as Error).message });
   }
+});
+
+/**
+ * GET /dashboard/api-health
+ * Circuit breaker state and API health metrics for Banco Chile API
+ * Shows: CB state, success rate, response times, recovery estimate
+ */
+router.get('/dashboard/api-health', requireAccounting, async (req: WebhookRequest, res: Response) => {
+  await getAPIHealth(req, res);
 });
 
 export default router;

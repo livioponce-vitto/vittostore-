@@ -29,7 +29,7 @@ describe('Dashboard Router', () => {
   describe('GET /dashboard/stats', () => {
     it('should return dashboard stats with default 30-day range', async () => {
       (prisma.order.count as jest.Mock).mockResolvedValue(10);
-      (prisma.order.aggregate as jest.Mock).mockResolvedValue({ _sum: { totalAmount: 1000 } });
+      (prisma.order.aggregate as jest.Mock).mockResolvedValue({ _sum: { totalAmount: { toNumber: () => 1000 } } });
       (prisma.payment.count as jest.Mock)
         .mockResolvedValueOnce(9)
         .mockResolvedValueOnce(10);
@@ -54,7 +54,7 @@ describe('Dashboard Router', () => {
 
     it('should filter stats by custom date range', async () => {
       (prisma.order.count as jest.Mock).mockResolvedValue(5);
-      (prisma.order.aggregate as jest.Mock).mockResolvedValue({ _sum: { totalAmount: 500 } });
+      (prisma.order.aggregate as jest.Mock).mockResolvedValue({ _sum: { totalAmount: { toNumber: () => 500 } } });
       (prisma.payment.count as jest.Mock)
         .mockResolvedValueOnce(5)
         .mockResolvedValueOnce(5);
@@ -74,7 +74,7 @@ describe('Dashboard Router', () => {
 
     it('should calculate payment success rate correctly', async () => {
       (prisma.order.count as jest.Mock).mockResolvedValue(100);
-      (prisma.order.aggregate as jest.Mock).mockResolvedValue({ _sum: { totalAmount: 50000 } });
+      (prisma.order.aggregate as jest.Mock).mockResolvedValue({ _sum: { totalAmount: { toNumber: () => 50000 } } });
       (prisma.payment.count as jest.Mock)
         .mockResolvedValueOnce(80)
         .mockResolvedValueOnce(100);
@@ -105,7 +105,7 @@ describe('Dashboard Router', () => {
 
     it('should handle zero payments case', async () => {
       (prisma.order.count as jest.Mock).mockResolvedValue(10);
-      (prisma.order.aggregate as jest.Mock).mockResolvedValue({ _sum: { totalAmount: 1000 } });
+      (prisma.order.aggregate as jest.Mock).mockResolvedValue({ _sum: { totalAmount: { toNumber: () => 1000 } } });
       (prisma.payment.count as jest.Mock)
         .mockResolvedValueOnce(0)
         .mockResolvedValueOnce(0);
@@ -275,6 +275,28 @@ describe('Dashboard Router', () => {
 
       expect(Logger.info).toHaveBeenCalledWith(expect.stringContaining('DLQ event'), expect.any(Object));
     });
+
+    it('should handle error during DLQ event update', async () => {
+      const mockEvent = {
+        id: 'dlq_1',
+        orderId: 'ord_1',
+        retryCount: 1,
+        maxRetries: 5,
+        order: { id: 'ord_1' },
+      };
+
+      (prisma.dLQEvent.findUnique as jest.Mock).mockResolvedValue(mockEvent);
+      (prisma.dLQEvent.update as jest.Mock).mockRejectedValue(new Error('DB update failed'));
+
+      const response = await request(app).post('/dlq/retry/dlq_1');
+
+      expect(response.status).toBe(500);
+      expect(response.body.error).toBe('DB update failed');
+      expect(Logger.error).toHaveBeenCalledWith(
+        expect.stringContaining('Failed to retry DLQ event'),
+        expect.any(Error)
+      );
+    });
   });
 
   describe('POST /dlq/batch-retry', () => {
@@ -331,7 +353,7 @@ describe('Dashboard Router', () => {
         .post('/dlq/batch-retry')
         .send({ retryAll: true });
 
-      expect(Logger.info).toHaveBeenCalledWith(expect.stringContaining('Batch retry initiated'), undefined);
+      expect(Logger.info).toHaveBeenCalledWith(expect.stringContaining('Batch retry initiated'));
     });
   });
 

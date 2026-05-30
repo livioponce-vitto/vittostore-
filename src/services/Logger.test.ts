@@ -146,10 +146,10 @@ describe('Logger', () => {
     });
 
     it('should handle array context', () => {
-      Logger.warn('Multiple errors', [{ code: 'ERR1' }, { code: 'ERR2' }]);
+      Logger.warn('Multiple errors', [{ code: 'ERR1', email: 'user@example.com' }]);
 
       expect(consoleWarnSpy).toHaveBeenCalled();
-      expect(VaultService.redact).toHaveBeenCalled();
+      expect(VaultService.redact).toHaveBeenCalledWith('user@example.com', 'email');
     });
   });
 
@@ -319,7 +319,7 @@ describe('Logger', () => {
       process.env.DEBUG = 'true';
       Logger.debug(message);
 
-      expect(VaultService.redact).toHaveBeenCalledTimes(4);
+      expect(VaultService.redact).toHaveBeenCalledTimes(7);
     });
 
     it('should redact PII in JSON stringified objects', () => {

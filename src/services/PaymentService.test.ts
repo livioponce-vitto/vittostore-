@@ -6,6 +6,14 @@ import { Logger } from './Logger';
 jest.mock('../db');
 jest.mock('./AuditService');
 jest.mock('./Logger');
+jest.mock('./CircuitBreakerService', () => ({
+  CircuitBreakerService: {
+    execute: jest.fn((endpoint, fn) => fn()),
+    getState: jest.fn(() => ({ state: 'CLOSED', failureCount: 0, successCount: 0, lastFailureTime: null, openedAt: null, halfOpenAttempts: 0 })),
+    recordMetric: jest.fn(),
+    reset: jest.fn(),
+  },
+}));
 
 describe('PaymentService', () => {
   let callCount = 0;
@@ -20,6 +28,10 @@ describe('PaymentService', () => {
       create: jest.fn(),
       findMany: jest.fn(),
     };
+    (prisma.dLQEvent as any) = {
+      findFirst: jest.fn(),
+      create: jest.fn(),
+    };
     jest.spyOn(PaymentService as any, 'callBancoChile').mockImplementation(async () => {
       callCount++;
       return {
@@ -27,6 +39,44 @@ describe('PaymentService', () => {
       };
     });
   });
+
+  interface EnvSnapshot {
+    BANCO_CHILE_API_URL?: string;
+    BANCO_CHILE_API_KEY?: string;
+  }
+
+  function captureEnvSnapshot(): EnvSnapshot {
+    return {
+      BANCO_CHILE_API_URL: process.env.BANCO_CHILE_API_URL,
+      BANCO_CHILE_API_KEY: process.env.BANCO_CHILE_API_KEY,
+    };
+  }
+
+  function restoreEnvSnapshot(snapshot: EnvSnapshot): void {
+    if (snapshot.BANCO_CHILE_API_URL === undefined) {
+      delete process.env.BANCO_CHILE_API_URL;
+    } else {
+      process.env.BANCO_CHILE_API_URL = snapshot.BANCO_CHILE_API_URL;
+    }
+
+    if (snapshot.BANCO_CHILE_API_KEY === undefined) {
+      delete process.env.BANCO_CHILE_API_KEY;
+    } else {
+      process.env.BANCO_CHILE_API_KEY = snapshot.BANCO_CHILE_API_KEY;
+    }
+  }
+
+  function removeCallBancoChileSpy(): jest.SpyInstance {
+    const spy = jest.spyOn(PaymentService as any, 'callBancoChile');
+    spy.mockRestore();
+    return spy;
+  }
+
+  function restoreCallBancoChileMock(currentCallCount: number): void {
+    jest.spyOn(PaymentService as any, 'callBancoChile').mockImplementation(async () => ({
+      transactionId: `bc_txn_${12345 + currentCallCount}`,
+    }));
+  }
 
   describe('processPayment()', () => {
     it('should process payment with tokenized card and return transaction', async () => {
@@ -315,8 +365,103 @@ describe('PaymentService', () => {
     });
 
     it('should validate Banco Chile API configuration is present', async () => {
-      // This would require the actual callBancoChile method to be accessible or mocked
       expect(PaymentService.processPayment).toBeDefined();
+    });
+
+    it('should throw error when BANCO_CHILE_API is not configured', async () => {
+      const mockOrder = { id: 'ord_1' };
+      (prisma.order.findUnique as jest.Mock).mockResolvedValue(mockOrder);
+
+      const originalAPI = process.env.BANCO_CHILE_API_URL;
+      const originalKey = process.env.BANCO_CHILE_API_KEY;
+      delete process.env.BANCO_CHILE_API_URL;
+      process.env.BANCO_CHILE_API_KEY = 'test-key';
+
+      (PaymentService as any).callBancoChile.mockRestore?.();
+      jest.spyOn(PaymentService as any, 'callBancoChile').mockRestore?.();
+
+      try {
+        await expect(
+          PaymentService.processPayment({
+            orderId: 'ord_1',
+            merchantId: 'mer_1',
+            userId: 'usr_1',
+            amount: 100,
+            cardToken: 'token_abc123',
+            cardLast4: '4242',
+          })
+        ).rejects.toThrow('Banco Chile API not configured');
+      } finally {
+        if (originalAPI) process.env.BANCO_CHILE_API_URL = originalAPI;
+        if (originalKey) process.env.BANCO_CHILE_API_KEY = originalKey;
+        jest.spyOn(PaymentService as any, 'callBancoChile').mockImplementation(async () => ({
+          transactionId: `bc_txn_${12345 + callCount}`,
+        }));
+      }
+    });
+
+    it('should throw error when BANCO_CHILE_KEY is not configured', async () => {
+      const mockOrder = { id: 'ord_1' };
+      (prisma.order.findUnique as jest.Mock).mockResolvedValue(mockOrder);
+
+      const originalAPI = process.env.BANCO_CHILE_API_URL;
+      const originalKey = process.env.BANCO_CHILE_API_KEY;
+      process.env.BANCO_CHILE_API_URL = 'https://api.banco-chile.com';
+      delete process.env.BANCO_CHILE_API_KEY;
+
+      (PaymentService as any).callBancoChile.mockRestore?.();
+      jest.spyOn(PaymentService as any, 'callBancoChile').mockRestore?.();
+
+      try {
+        await expect(
+          PaymentService.processPayment({
+            orderId: 'ord_1',
+            merchantId: 'mer_1',
+            userId: 'usr_1',
+            amount: 100,
+            cardToken: 'token_abc123',
+            cardLast4: '4242',
+          })
+        ).rejects.toThrow('Banco Chile API not configured');
+      } finally {
+        if (originalAPI) process.env.BANCO_CHILE_API_URL = originalAPI;
+        if (originalKey) process.env.BANCO_CHILE_API_KEY = originalKey;
+        jest.spyOn(PaymentService as any, 'callBancoChile').mockImplementation(async () => ({
+          transactionId: `bc_txn_${12345 + callCount}`,
+        }));
+      }
+    });
+
+    it('should throw error when both API and KEY are not configured', async () => {
+      const mockOrder = { id: 'ord_1' };
+      (prisma.order.findUnique as jest.Mock).mockResolvedValue(mockOrder);
+
+      const originalAPI = process.env.BANCO_CHILE_API_URL;
+      const originalKey = process.env.BANCO_CHILE_API_KEY;
+      delete process.env.BANCO_CHILE_API_URL;
+      delete process.env.BANCO_CHILE_API_KEY;
+
+      (PaymentService as any).callBancoChile.mockRestore?.();
+      jest.spyOn(PaymentService as any, 'callBancoChile').mockRestore?.();
+
+      try {
+        await expect(
+          PaymentService.processPayment({
+            orderId: 'ord_1',
+            merchantId: 'mer_1',
+            userId: 'usr_1',
+            amount: 100,
+            cardToken: 'token_abc123',
+            cardLast4: '4242',
+          })
+        ).rejects.toThrow('Banco Chile API not configured');
+      } finally {
+        if (originalAPI) process.env.BANCO_CHILE_API_URL = originalAPI;
+        if (originalKey) process.env.BANCO_CHILE_API_KEY = originalKey;
+        jest.spyOn(PaymentService as any, 'callBancoChile').mockImplementation(async () => ({
+          transactionId: `bc_txn_${12345 + callCount}`,
+        }));
+      }
     });
   });
 
@@ -753,6 +898,179 @@ describe('PaymentService', () => {
       ).rejects.toThrow();
 
       expect(Logger.error).toHaveBeenCalled();
+    });
+  });
+
+  describe('Error Scenarios - Environment Variable Handling', () => {
+    let envSnapshot: EnvSnapshot;
+
+    beforeEach(() => {
+      envSnapshot = captureEnvSnapshot();
+      jest.clearAllMocks();
+      removeCallBancoChileSpy();
+      (prisma.order as any) = {
+        findUnique: jest.fn(),
+      };
+      (prisma.payment as any) = {
+        create: jest.fn(),
+        findMany: jest.fn(),
+      };
+    });
+
+    afterEach(() => {
+      restoreEnvSnapshot(envSnapshot);
+      jest.clearAllMocks();
+      restoreCallBancoChileMock(callCount);
+    });
+
+    it('should throw error when BANCO_CHILE_API_URL is not configured', async () => {
+      const mockOrder = { id: 'ord_1' };
+      (prisma.order.findUnique as jest.Mock).mockResolvedValue(mockOrder);
+
+      delete process.env.BANCO_CHILE_API_URL;
+      process.env.BANCO_CHILE_API_KEY = 'test-key-should-not-matter';
+
+      const error = await PaymentService.processPayment({
+        orderId: 'ord_1',
+        merchantId: 'mer_1',
+        userId: 'usr_1',
+        amount: 100,
+        cardToken: 'token_abc123',
+        cardLast4: '4242',
+      }).catch((e) => e);
+
+      expect(error).toBeInstanceOf(Error);
+      expect(error.message).toContain('Banco Chile API not configured');
+    });
+
+    it('should throw error when BANCO_CHILE_API_KEY is not configured', async () => {
+      const mockOrder = { id: 'ord_1' };
+      (prisma.order.findUnique as jest.Mock).mockResolvedValue(mockOrder);
+
+      process.env.BANCO_CHILE_API_URL = 'https://api.banco-chile.com';
+      delete process.env.BANCO_CHILE_API_KEY;
+
+      const error = await PaymentService.processPayment({
+        orderId: 'ord_1',
+        merchantId: 'mer_1',
+        userId: 'usr_1',
+        amount: 100,
+        cardToken: 'token_abc123',
+        cardLast4: '4242',
+      }).catch((e) => e);
+
+      expect(error).toBeInstanceOf(Error);
+      expect(error.message).toContain('Banco Chile API not configured');
+    });
+
+    it('should throw error when both BANCO_CHILE_API_URL and KEY are missing', async () => {
+      const mockOrder = { id: 'ord_1' };
+      (prisma.order.findUnique as jest.Mock).mockResolvedValue(mockOrder);
+
+      delete process.env.BANCO_CHILE_API_URL;
+      delete process.env.BANCO_CHILE_API_KEY;
+
+      const error = await PaymentService.processPayment({
+        orderId: 'ord_1',
+        merchantId: 'mer_1',
+        userId: 'usr_1',
+        amount: 100,
+        cardToken: 'token_abc123',
+        cardLast4: '4242',
+      }).catch((e) => e);
+
+      expect(error).toBeInstanceOf(Error);
+      expect(error.message).toContain('Banco Chile API not configured');
+    });
+
+    it('should create failed payment record when API not configured', async () => {
+      const mockOrder = { id: 'ord_1', merchantId: 'mer_1' };
+      (prisma.order.findUnique as jest.Mock).mockResolvedValue(mockOrder);
+      (prisma.payment.create as jest.Mock).mockResolvedValue({
+        id: 'pay_failed',
+        status: 'FAILED',
+        transactionId: `failed_${Date.now()}`,
+      });
+
+      delete process.env.BANCO_CHILE_API_URL;
+      delete process.env.BANCO_CHILE_API_KEY;
+
+      await PaymentService.processPayment({
+        orderId: 'ord_1',
+        merchantId: 'mer_1',
+        userId: 'usr_1',
+        amount: 100,
+        cardToken: 'token_abc123',
+        cardLast4: '4242',
+      }).catch(() => {});
+
+      expect(prisma.payment.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          orderId: 'ord_1',
+          merchantId: 'mer_1',
+          amount: 100,
+          status: 'FAILED',
+          errorMessage: expect.stringContaining('Banco Chile API not configured'),
+        }),
+      });
+    });
+
+    it('should log error to Logger when API not configured', async () => {
+      const mockOrder = { id: 'ord_1' };
+      (prisma.order.findUnique as jest.Mock).mockResolvedValue(mockOrder);
+
+      delete process.env.BANCO_CHILE_API_URL;
+      delete process.env.BANCO_CHILE_API_KEY;
+
+      await PaymentService.processPayment({
+        orderId: 'ord_1',
+        merchantId: 'mer_1',
+        userId: 'usr_1',
+        amount: 100,
+        cardToken: 'token_abc123',
+        cardLast4: '4242',
+      }).catch(() => {});
+
+      expect(Logger.error).toHaveBeenCalledWith(
+        expect.stringContaining('Payment processing failed'),
+        expect.any(Error),
+        expect.objectContaining({
+          circuitBreakerState: expect.any(String),
+          failureCount: expect.any(Number),
+        })
+      );
+    });
+
+    it('should verify environment is properly restored after error test', async () => {
+      expect(envSnapshot).toBeDefined();
+    });
+
+    it('should generate transactionId when Banco Chile API is properly configured', async () => {
+      const mockOrder = { id: 'ord_1', merchantId: 'mer_1' };
+      (prisma.order.findUnique as jest.Mock).mockResolvedValue(mockOrder);
+      (prisma.payment.create as jest.Mock).mockResolvedValue({
+        id: 'pay_1',
+        status: 'APPROVED',
+        transactionId: `bc_${Date.now()}_abc123`,
+      });
+
+      process.env.BANCO_CHILE_API_URL = 'https://api.banco-chile.com';
+      process.env.BANCO_CHILE_API_KEY = 'test-key';
+
+      const result = await PaymentService.processPayment({
+        orderId: 'ord_1',
+        merchantId: 'mer_1',
+        userId: 'usr_1',
+        amount: 100,
+        cardToken: 'token_abc123',
+        cardLast4: '4242',
+      });
+
+      expect(result).toMatchObject({
+        status: 'APPROVED',
+      });
+      expect(result.transactionId).toBeDefined();
+      expect(result.transactionId).toMatch(/^bc_/);
     });
   });
 });

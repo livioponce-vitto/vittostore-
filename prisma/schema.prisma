@@ -235,13 +235,31 @@ model SyncLog {
   @@index([status])
 }
 
+model APIHealthMetric {
+  id                String   @id @default(cuid())
+  apiEndpoint       String   // "BANCO_CHILE"
+  timestamp         DateTime @default(now())
+  responseTimeMs    Int      // API response duration
+  httpStatus        Int?     // HTTP status code (2xx, 4xx, 5xx)
+  success           Boolean
+  errorCode         String?  // TIMEOUT, NETWORK, AUTH, BUSINESS_ERROR
+  errorMessage      String?  @db.Text
+  retryAttempt      Int      @default(0)
+  orderId           String?  // Link to order if available
+
+  @@index([apiEndpoint, timestamp])
+  @@index([success, timestamp])
+  @@index([apiEndpoint, success])
+}
+
 model DLQEvent {
   id                String   @id @default(cuid())
   orderId           String
   merchantId        String
-  eventType         String   // WEBHOOK_FAILED, ORACULO_FAILED, SII_SUBMISSION_FAILED
+  eventType         String   // WEBHOOK_FAILED, ORACULO_FAILED, SII_SUBMISSION_FAILED, PAYMENT_FAILED
   errorCode         String
   errorMessage      String   @db.Text
+  circuitBreakerState String? // CLOSED, OPEN, HALF_OPEN
   retryCount        Int      @default(0)
   maxRetries        Int      @default(5)
   status            String   @default("PENDING") // PENDING, PROCESSING, RESOLVED, FAILED

@@ -1,14 +1,20 @@
 import { prisma } from '../db';
 import { AuditService } from './AuditService';
 import { Logger } from './Logger';
+import { CircuitBreakerService } from './CircuitBreakerService';
 
 /**
  * Payment Service: processes payments via Banco Chile tokenization API
  * Enforces: engineering-security/SKILL.md (no plaintext card numbers)
  */
 export class PaymentService {
-  private static readonly BANCO_CHILE_API = process.env.BANCO_CHILE_API_URL;
-  private static readonly BANCO_CHILE_KEY = process.env.BANCO_CHILE_API_KEY;
+  private static getApiUrl(): string | undefined {
+    return process.env.BANCO_CHILE_API_URL;
+  }
+
+  private static getApiKey(): string | undefined {
+    return process.env.BANCO_CHILE_API_KEY;
+  }
 
   /**
    * Process payment with Banco Chile tokenization
@@ -39,8 +45,19 @@ export class PaymentService {
     }
 
     try {
-      // Call Banco Chile API with token
-      const response = await this.callBancoChile();
+      // Call Banco Chile API with circuit breaker protection
+      const response = await CircuitBreakerService.execute(
+        'BancoChileAPI',
+        () => this.callBancoChile(),
+        {
+          failureThreshold: 3,
+          successThreshold: 2,
+          failureWindow: 30000,
+          cooldownTime: 60000,
+          halfOpenRequests: 3,
+          timeout: 5000,
+        }
+      );
 
       // Create payment record with token (never plaintext)
       const payment = await prisma.payment.create({
@@ -79,7 +96,12 @@ export class PaymentService {
         status: 'APPROVED',
       };
     } catch (error) {
-      Logger.error(`Payment processing failed for order ${payload.orderId}`, error as Error);
+      const cbState = CircuitBreakerService.getState('BancoChileAPI');
+
+      Logger.error(`Payment processing failed for order ${payload.orderId}`, error as Error, {
+        circuitBreakerState: cbState.state,
+        failureCount: cbState.failureCount,
+      });
 
       // Create failed payment record
       await prisma.payment.create({
@@ -97,6 +119,33 @@ export class PaymentService {
         },
       });
 
+      // Calculate exponential backoff for retry scheduling
+      const existingDLQ = await prisma.dLQEvent.findFirst({
+        where: {
+          orderId: payload.orderId,
+          eventType: 'PAYMENT_FAILED',
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      const retryCount = (existingDLQ?.retryCount || 0) + 1;
+      const backoffMs = Math.min(1000 * Math.pow(2, retryCount), 16000);
+
+      // Create DLQEvent with circuit breaker state and next retry time
+      await prisma.dLQEvent.create({
+        data: {
+          orderId: payload.orderId,
+          merchantId: payload.merchantId,
+          eventType: 'PAYMENT_FAILED',
+          errorCode: (error as any).code || 'UNKNOWN_ERROR',
+          errorMessage: (error as Error).message,
+          circuitBreakerState: cbState.state,
+          retryCount,
+          status: 'PENDING',
+          nextRetryAt: new Date(Date.now() + backoffMs),
+        },
+      });
+
       throw error;
     }
   }
@@ -106,15 +155,34 @@ export class PaymentService {
    * Production: replace with actual API integration
    */
   private static async callBancoChile(): Promise<{ transactionId: string }> {
-    if (!this.BANCO_CHILE_API || !this.BANCO_CHILE_KEY) {
+    const startTime = Date.now();
+
+    if (!this.getApiUrl() || !this.getApiKey()) {
+      CircuitBreakerService.recordMetric('BancoChileAPI', false, 0, 'CONFIG_ERROR');
       throw new Error('Banco Chile API not configured');
     }
 
-    // TODO: Implement actual Banco Chile API call
-    // This is a placeholder that simulates successful tokenization
-    return {
-      transactionId: `bc_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
-    };
+    try {
+      // TODO: Implement actual Banco Chile API call
+      // This is a placeholder that simulates successful tokenization
+      const result = {
+        transactionId: `bc_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
+      };
+
+      const responseTime = Date.now() - startTime;
+      CircuitBreakerService.recordMetric('BancoChileAPI', true, responseTime);
+
+      return result;
+    } catch (error) {
+      const responseTime = Date.now() - startTime;
+      CircuitBreakerService.recordMetric(
+        'BancoChileAPI',
+        false,
+        responseTime,
+        (error as any).code || 'API_ERROR'
+      );
+      throw error;
+    }
   }
 
   /**
