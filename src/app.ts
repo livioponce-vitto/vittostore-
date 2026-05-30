@@ -1,10 +1,27 @@
 import express, { Express, Request, Response, NextFunction } from 'express';
 import { prisma } from './db';
 import { Logger } from './services/Logger';
+import { RetryWorkerService } from './services/RetryWorkerService';
 import ordersRouter from './routes/orders';
 import dashboardRouter from './routes/dashboard';
 
 const app: Express = express();
+
+// Track retry worker startup state
+let retryWorkerInitialized = false;
+let lastRetryWorkerPollTime: Date | null = null;
+
+// Initialize retry worker
+async function initializeRetryWorker(): Promise<void> {
+  try {
+    await RetryWorkerService.start({ pollIntervalMs: 5 * 60 * 1000 });
+    retryWorkerInitialized = true;
+    Logger.info('RetryWorkerService initialized and polling every 5 minutes');
+  } catch (error) {
+    Logger.error('Failed to initialize RetryWorkerService', error as Error);
+    throw error;
+  }
+}
 
 // Middleware
 app.use(express.json());
@@ -30,7 +47,14 @@ app.use('/dashboard', dashboardRouter);
 
 // Health check
 app.get('/health', (_req: Request, res: Response) => {
-  res.status(200).json({ status: 'ok', timestamp: new Date() });
+  res.status(200).json({
+    status: 'ok',
+    timestamp: new Date(),
+    retryWorker: {
+      initialized: retryWorkerInitialized,
+      lastPollTime: lastRetryWorkerPollTime,
+    },
+  });
 });
 
 // 404 handler
@@ -55,14 +79,21 @@ app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
 // Graceful shutdown
 process.on('SIGTERM', async () => {
   Logger.info('SIGTERM received, shutting down gracefully');
+  if (retryWorkerInitialized) {
+    RetryWorkerService.stop();
+  }
   await prisma.$disconnect();
   process.exit(0);
 });
 
 process.on('SIGINT', async () => {
   Logger.info('SIGINT received, shutting down gracefully');
+  if (retryWorkerInitialized) {
+    RetryWorkerService.stop();
+  }
   await prisma.$disconnect();
   process.exit(0);
 });
 
 export default app;
+export { initializeRetryWorker };

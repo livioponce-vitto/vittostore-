@@ -136,7 +136,7 @@ export class RetryWorkerService {
         data: {
           retryCount: nextRetryCount,
           nextRetryAt,
-          lastErrorMessage: (error as Error).message,
+          errorMessage: (error as Error).message,
         },
       });
 
