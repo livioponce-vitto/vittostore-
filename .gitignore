@@ -41,6 +41,8 @@ Thumbs.db
 DELETE_ME*
 **/cleanup_report*
 **/uninstall_status*
+*.zip
+.oraculo-backend-backup-*
 
 # Workspace local
 workspace/
