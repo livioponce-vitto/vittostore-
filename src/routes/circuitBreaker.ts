@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import { prisma } from '../db';
 import { CircuitBreakerService } from '../services/CircuitBreakerService';
 
-export async function getAPIHealth(req: Request, res: Response): Promise<void> {
+export async function getAPIHealth(_req: Request, res: Response): Promise<void> {
   try {
     const cbState = CircuitBreakerService.getState('BancoChileAPI');
 
@@ -15,7 +15,6 @@ export async function getAPIHealth(req: Request, res: Response): Promise<void> {
     });
 
     const successCount = metrics.filter((m) => m.success).length;
-    const failureCount = metrics.filter((m) => !m.success).length;
     const avgResponseTime =
       metrics.length > 0
         ? metrics.reduce((sum, m) => sum + m.responseTimeMs, 0) / metrics.length
