@@ -4,6 +4,8 @@ import { Logger } from './services/Logger';
 import { RetryWorkerService } from './services/RetryWorkerService';
 import ordersRouter from './routes/orders';
 import dashboardRouter from './routes/dashboard';
+import dlqDashboardRouter from './routes/dlqDashboard.routes';
+import circuitBreakerRouter from './routes/circuitBreaker.routes';
 
 const app: Express = express();
 
@@ -44,6 +46,8 @@ app.use((_req: Request, res: Response, next: NextFunction) => {
 // Routes
 app.use('/orders', ordersRouter);
 app.use('/dashboard', dashboardRouter);
+app.use('/dashboard', dlqDashboardRouter);
+app.use(circuitBreakerRouter);
 
 // Health check
 app.get('/health', (_req: Request, res: Response) => {
