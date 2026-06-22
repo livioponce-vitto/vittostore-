@@ -10,7 +10,7 @@ jobs:
     name: Semgrep SAST
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
       - uses: returntocorp/semgrep-action@v1
         with:
           config: .semgrep.yml
@@ -24,7 +24,7 @@ jobs:
     name: Trivy Vulnerability Scan
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
       - uses: aquasecurity/trivy-action@master
         with:
           scan-type: fs
@@ -36,7 +36,7 @@ jobs:
     name: Vault Secrets Validation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
       - name: Check for hardcoded secrets
         run: |
           if grep -r "VAULT_TOKEN\|API_KEY\|SECRET_KEY" . --include="*.ts" --include="*.js" --exclude-dir=node_modules --exclude-dir=.git; then
