@@ -15,7 +15,7 @@
     "supertest": "^7.2.2"
   },
   "dependencies": {
-    "@shopify/shopify-api": "^13.0.0",
+    "@shopify/shopify-api": "^13.1.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "csrf-csrf": "^4.0.3",
